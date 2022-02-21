@@ -10,7 +10,7 @@ import { setContext } from '@apollo/client/link/context';
 import { NgxsReduxDevtoolsPluginModule } from '@ngxs/devtools-plugin';
 import { NgxsStoragePluginModule } from '@ngxs/storage-plugin';
 import { NgxsModule } from '@ngxs/store';
-import { APOLLO_OPTIONS } from 'apollo-angular';
+import { ApolloModule, APOLLO_OPTIONS } from 'apollo-angular';
 import { HttpLink } from 'apollo-angular/http';
 import { de_DE, NZ_I18N } from 'ng-zorro-antd/i18n';
 import { environment } from 'src/environments/environment';
@@ -78,6 +78,7 @@ const provideApolloFn = (httpLink: HttpLink) => {
         }),
         ScheduleModule,
         NgxsReduxDevtoolsPluginModule.forRoot(),
+        ApolloModule
     ],
     bootstrap: [AppComponent],
     providers: [
