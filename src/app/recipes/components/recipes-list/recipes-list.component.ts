@@ -26,9 +26,7 @@ export class RecipesListComponent {
         this.tags$ = this.tagsFromStore$.pipe(
             map(tags => [...tags].sort()),
             map(tags =>
-                tags.map(tag => {
-                    return { text: tag, value: tag };
-                })
+                tags.map(tag => ({ text: tag, value: tag }))
             )
         );
     }
