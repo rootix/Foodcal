@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -18,12 +18,12 @@ export class MealDialogComponent implements OnInit {
     isOpen = false;
     isNew = false;
 
-    readonly form = new FormGroup({
-        _id: new FormControl(0, Validators.required),
-        date: new FormControl(null, Validators.required),
-        type: new FormControl(null, Validators.required),
-        recipe: new FormControl(null, Validators.required),
-        notes: new FormControl(),
+    readonly form = new UntypedFormGroup({
+        _id: new UntypedFormControl(0, Validators.required),
+        date: new UntypedFormControl(null, Validators.required),
+        type: new UntypedFormControl(null, Validators.required),
+        recipe: new UntypedFormControl(null, Validators.required),
+        notes: new UntypedFormControl(),
     });
 
     submitLoading: boolean;

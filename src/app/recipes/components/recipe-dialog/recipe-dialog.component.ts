@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
@@ -16,12 +16,12 @@ export class RecipeDialogComponent {
     isOpen = false;
     isNew = false;
 
-    readonly form = new FormGroup({
-        _id: new FormControl(null, Validators.required),
-        name: new FormControl(null, Validators.required),
-        url: new FormControl(),
-        tags: new FormControl(),
-        note: new FormControl(),
+    readonly form = new UntypedFormGroup({
+        _id: new UntypedFormControl(null, Validators.required),
+        name: new UntypedFormControl(null, Validators.required),
+        url: new UntypedFormControl(),
+        tags: new UntypedFormControl(),
+        note: new UntypedFormControl(),
     });
 
     loading: boolean;
