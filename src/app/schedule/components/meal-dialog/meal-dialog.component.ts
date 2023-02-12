@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import {FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators} from '@angular/forms';
+import { FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from "rxjs";
 import { finalize } from 'rxjs/operators';
 import { Recipe } from 'src/app/shared/models';
 import { EnsureLoadAllRecipes, RecipeState } from 'src/app/shared/state/recipe';
@@ -12,8 +12,8 @@ import { Meal } from '../../models/schedule.model';
     templateUrl: './meal-dialog.component.html',
 })
 export class MealDialogComponent implements OnInit {
-    @Select(RecipeState.getAllRecipes) allRecipes$: Observable<Recipe[]>;
-    @Select(RecipeState.loading) allRecipesLoading$: Observable<boolean>;
+    @Select(RecipeState.getAllRecipes) allRecipes$!: Observable<Recipe[]>;
+    @Select(RecipeState.loading) allRecipesLoading$!: Observable<boolean>;
 
     isOpen = false;
     isNew = false;
@@ -26,9 +26,9 @@ export class MealDialogComponent implements OnInit {
         notes: new UntypedFormControl(),
     });
 
-    submitLoading: boolean;
+    submitLoading = false;
 
-    private submitHandler: (meal: Meal) => Observable<void>;
+    private submitHandler: (meal: Meal) => Observable<void> = (_) => EMPTY;
 
     constructor(private store: Store) {}
 
@@ -62,7 +62,7 @@ export class MealDialogComponent implements OnInit {
         this.submitLoading = true;
         this.submitHandler({ ...this.form.value })
             .pipe(finalize(() => (this.submitLoading = false)))
-            .subscribe(_ => {
+            .subscribe((_) => {
                 this.isOpen = false;
             });
     }

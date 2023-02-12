@@ -13,13 +13,13 @@ exports.handler = (event, context, callback) => {
     });
     client
         .query(q.Logout(false))
-        .then(_ => {
+        .then((_) => {
             return callback(null, {
                 statusCode: 200,
                 body: 'true',
             });
         })
-        .catch(_ => {
+        .catch((_) => {
             return callback(null, {
                 statusCode: 200,
                 body: 'false',

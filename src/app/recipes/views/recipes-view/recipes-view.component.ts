@@ -17,10 +17,10 @@ import { RecipeDialogComponent } from '../../components/recipe-dialog/recipe-dia
     templateUrl: './recipes-view.component.html',
 })
 export class RecipesViewComponent implements OnInit {
-    @ViewChild(RecipeDialogComponent) dialog: RecipeDialogComponent;
+    @ViewChild(RecipeDialogComponent) dialog?: RecipeDialogComponent;
 
-    @Select(RecipeState.getAllRecipes) recipes$: Observable<Recipe[]>;
-    @Select(RecipeState.loading) loading$: Observable<boolean>;
+    @Select(RecipeState.getAllRecipes) recipes$!: Observable<Recipe[]>;
+    @Select(RecipeState.loading) loading$!: Observable<boolean>;
 
     constructor(private store: Store, private modalService: NzModalService) {}
 
@@ -29,11 +29,19 @@ export class RecipesViewComponent implements OnInit {
     }
 
     onCreateRecipe() {
-        this.dialog.open({} as Recipe, r => this.store.dispatch(new CreateRecipe(r)));
+      if (!this.dialog) {
+        throw Error("no dialog present");
+      }
+
+      this.dialog.open({} as Recipe, (r) => this.store.dispatch(new CreateRecipe(r)));
     }
 
     onEditRecipe(recipe: Recipe) {
-        this.dialog.open(recipe, r => this.store.dispatch(new UpdateRecipe(r)));
+      if (!this.dialog) {
+        throw Error("no dialog present");
+      }
+
+      this.dialog.open(recipe, (r) => this.store.dispatch(new UpdateRecipe(r)));
     }
 
     onDeleteRecipe(recipe: Recipe) {

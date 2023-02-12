@@ -13,13 +13,13 @@ exports.handler = (event, context, callback) => {
     const { username, password } = JSON.parse(event.body);
     client
         .query(q.Login(q.Match(q.Index('usersByEmail'), username), { password }))
-        .then(response => {
+        .then((response) => {
             return callback(null, {
                 statusCode: 200,
                 body: JSON.stringify(response.secret),
             });
         })
-        .catch(error => {
+        .catch((error) => {
             console.log(`Login failed for user ${username}`, error.message);
             return callback(null, {
                 statusCode: 401,

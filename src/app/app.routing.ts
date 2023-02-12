@@ -8,7 +8,7 @@ const routes: Routes = [
     { path: 'schedule', children: SCHEDULE_ROUTES, canActivate: [AuthGuard] },
     {
         path: 'recipes',
-        loadChildren: () => import('./recipes/recipes.module').then(m => m.RecipesModule),
+        loadChildren: () => import('./recipes/recipes.module').then((m) => m.RecipesModule),
         canActivate: [AuthGuard],
     },
     { path: '', redirectTo: 'schedule', pathMatch: 'full' },

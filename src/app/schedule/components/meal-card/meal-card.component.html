@@ -1,4 +1,4 @@
-<nz-card [class.empty]="isNew" [nzActions]="isNew ? [add] : [edit, delete]">
+<nz-card *ngIf="meal" [class.empty]="isNew" [nzActions]="isNew ? [add] : [edit, delete]">
     <div class="card-block">
         <span class="card-tag">{{ meal.type === 0 ? 'Mittag' : 'Abend' }}</span>
         <h3 class="card-title">

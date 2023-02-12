@@ -4,6 +4,11 @@ import { isFuture, max, startOfDay } from 'date-fns';
 import { map } from 'rxjs/operators';
 import { Recipe } from '../models';
 
+interface GraphQlRecipe extends Recipe {
+  meals: { data: { date: string }[] }
+}
+
+
 @Injectable({ providedIn: 'root' })
 export class RecipeApiService {
     constructor(private apollo: Apollo) {}
@@ -11,7 +16,7 @@ export class RecipeApiService {
     getAllRecipes() {
         // TODO: The Join to meals is super inefficient as i only need the newest date. Learn FQL -.-
         return this.apollo
-            .query<{ allRecipesByDeletedFlag: { data: Recipe[] } }>({
+            .query<{ allRecipesByDeletedFlag: { data: GraphQlRecipe[] } }>({
                 query: gql`
                     query GetAllRecipes {
                         allRecipesByDeletedFlag(_size: 1000, deleted: false) {
@@ -33,8 +38,8 @@ export class RecipeApiService {
                 `,
             })
             .pipe(
-                map(response => response.data.allRecipesByDeletedFlag.data),
-                map(graphQlRecipes => graphQlRecipes.map(r => this.convertGraphQlRecipeToRecipe(r)))
+                map((response) => response.data.allRecipesByDeletedFlag.data),
+                map((graphQlRecipes) => graphQlRecipes.map((r) => this.convertGraphQlRecipeToRecipe(r)))
             );
     }
 
@@ -62,7 +67,15 @@ export class RecipeApiService {
                     tags: recipe.tags || [],
                 },
             })
-            .pipe(map(response => response.data.createRecipe._id));
+            .pipe(
+                map((response) => {
+                    if (!response.data) {
+                        throw Error('missing response');
+                    }
+
+                    return response.data.createRecipe._id;
+                })
+            );
     }
 
     updateRecipe(recipe: Recipe) {
@@ -94,28 +107,37 @@ export class RecipeApiService {
                     tags: recipe.tags || [],
                 },
             })
-            .pipe(map(response => response.data.updateRecipe._ts));
+            .pipe(
+                map((response) => {
+                    if (!response.data) {
+                        throw Error('missing response');
+                    }
+
+                    return response.data.updateRecipe._ts;
+                })
+            );
     }
 
-    private convertGraphQlRecipeToRecipe(graphQlRecipe: any): Recipe {
+    private convertGraphQlRecipeToRecipe(graphQlRecipe: GraphQlRecipe): Recipe {
         return {
             _id: graphQlRecipe._id,
             name: graphQlRecipe.name,
             url: graphQlRecipe.url,
-            lastPreparation: this.getNewestNonFutureDateFromGraphQlDates(graphQlRecipe.meals.data.map(d => d.date)),
+            lastPreparation:
+                this.getNewestNonFutureDateFromGraphQlDates(graphQlRecipe.meals.data.map((d) => d.date)) ?? undefined,
             note: graphQlRecipe.note,
             tags: graphQlRecipe.tags,
             deleted: graphQlRecipe.deleted,
         };
     }
 
-    private getNewestNonFutureDateFromGraphQlDates(datesAsString: string[]): Date {
+    private getNewestNonFutureDateFromGraphQlDates(datesAsString: string[]): Date | null {
         if (datesAsString == null || !datesAsString.length) {
             return null;
         }
 
-        const parsedDates = datesAsString.map(d => startOfDay(new Date(d)));
-        const datesNotInFuture = parsedDates.filter(d => !isFuture(d));
+        const parsedDates = datesAsString.map((d) => startOfDay(new Date(d)));
+        const datesNotInFuture = parsedDates.filter((d) => !isFuture(d));
         if (!datesNotInFuture.length) {
             return null;
         }

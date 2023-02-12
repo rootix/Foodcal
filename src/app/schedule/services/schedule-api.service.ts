@@ -4,6 +4,8 @@ import { differenceInCalendarDays, format, startOfDay } from 'date-fns';
 import { map } from 'rxjs/operators';
 import { Meal, MealType } from '../models/schedule.model';
 
+interface GraphQlMeal extends Meal {}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -13,7 +15,7 @@ export class ScheduleApiService {
     getMealsOfWeek(startDate: Date, endDate: Date) {
         const maxNumberOfMeals = (differenceInCalendarDays(endDate, startDate) + 1) * 2;
         return this.apollo
-            .query<{ allMealsInDateRange: { data: any[] } }>({
+            .query<{ allMealsInDateRange: { data: GraphQlMeal[] } }>({
                 query: gql`
                     query GetMealsOfWeek($from: Date!, $to: Date!, $size: Int!) {
                         allMealsInDateRange(from: $from, to: $to, _size: $size) {
@@ -38,14 +40,18 @@ export class ScheduleApiService {
                 },
             })
             .pipe(
-                map(response => response.data.allMealsInDateRange.data),
-                map(graphQlMeals => graphQlMeals.map(m => this.convertGraphQlMealToMeal(m))),
-                map(meals => meals.filter(m => m.date >= startDate)),
-                map(meals => meals.filter(m => m.date <= endDate))
+                map((response) => response.data.allMealsInDateRange.data),
+                map((graphQlMeals) => graphQlMeals.map((m) => this.convertGraphQlMealToMeal(m))),
+                map((meals) => meals.filter((m) => m.date >= startDate)),
+                map((meals) => meals.filter((m) => m.date <= endDate))
             );
     }
 
     createMeal(meal: Meal) {
+        if (meal.recipe == undefined) {
+            throw Error('Recipe missing');
+        }
+
         return this.apollo
             .mutate<{ createMeal: { _id: string } }>({
                 mutation: gql`
@@ -62,10 +68,22 @@ export class ScheduleApiService {
                     notes: meal.notes,
                 },
             })
-            .pipe(map(response => response.data.createMeal._id));
+            .pipe(
+                map((response) => {
+                    if (!response.data) {
+                        throw Error('missing response');
+                    }
+
+                    return response.data.createMeal._id;
+                })
+            );
     }
 
     updateMeal(meal: Meal) {
+        if (meal.recipe == undefined) {
+            throw Error('Recipe missing');
+        }
+
         return this.apollo
             .mutate<{ updateMeal: { _ts: number } }>({
                 mutation: gql`
@@ -89,7 +107,15 @@ export class ScheduleApiService {
                     notes: meal.notes,
                 },
             })
-            .pipe(map(response => response.data.updateMeal._ts));
+            .pipe(
+                map((response) => {
+                    if (!response.data) {
+                        throw Error('missing response');
+                    }
+
+                    return response.data.updateMeal._ts;
+                })
+            );
     }
 
     deleteMeal(id: string) {
@@ -106,15 +132,25 @@ export class ScheduleApiService {
                     id,
                 },
             })
-            .pipe(map(response => response.data.deleteMeal._id));
+            .pipe(
+                map((response) => {
+                    if (!response.data) {
+                        throw Error('missing response');
+                    }
+
+                    return response.data.deleteMeal._id;
+                })
+            );
     }
 
-    private convertGraphQlMealToMeal(graphQlMeal: any): Meal {
+    private convertGraphQlMealToMeal(graphQlMeal: GraphQlMeal): Meal {
         return {
             _id: graphQlMeal._id,
             date: startOfDay(new Date(graphQlMeal.date)),
-            recipe: { _id: graphQlMeal.recipe._id, name: graphQlMeal.recipe.name, url: graphQlMeal.recipe.url },
-            type: MealType[graphQlMeal.type as string],
+            recipe: graphQlMeal.recipe
+                ? { _id: graphQlMeal.recipe._id, name: graphQlMeal.recipe.name, url: graphQlMeal.recipe.url }
+                : undefined,
+            type: graphQlMeal.type,
             notes: graphQlMeal.notes,
         };
     }

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Predicate } from "@angular/core";
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { append, patch, removeItem, updateItem } from '@ngxs/store/operators';
 import { map, tap } from 'rxjs/operators';
@@ -52,36 +52,36 @@ export class RecipeState {
     @Action(CreateRecipe)
     private createRecipe(context: StateContext<RecipeStateModel>, { recipe }: CreateRecipe) {
         return this.recipeService.createRecipe(recipe).pipe(
-            map(id => Object.assign({}, recipe, { _id: id } as Recipe)),
-            tap(newRecipe => {
+            map((id) => Object.assign({}, recipe, { _id: id } as Recipe)),
+            tap((newRecipe) => {
                 context.setState(patch({ recipes: append([newRecipe]) }));
             }),
-            tap(_ => context.dispatch(new RecalculateTags()))
+            tap((_) => context.dispatch(new RecalculateTags()))
         );
     }
 
     @Action(UpdateRecipe)
     private updateRecipe(context: StateContext<RecipeStateModel>, { recipe }: CreateRecipe) {
         return this.recipeService.updateRecipe(recipe).pipe(
-            tap(timestamp =>
+            tap((timestamp) =>
                 context.setState(
                     patch({
-                        recipes: updateItem(
-                            (r: Recipe) => r._id === recipe._id,
+                        recipes: updateItem<Recipe>(
+                            r => r?._id === recipe._id,
                             patch(Object.assign({}, recipe, { _ts: timestamp } as Recipe))
                         ),
                     })
                 )
             ),
-            tap(_ => context.dispatch(new RecalculateTags()))
+            tap((_) => context.dispatch(new RecalculateTags()))
         );
     }
 
     @Action(DeleteRecipe)
     private deleteRecipe(context: StateContext<RecipeStateModel>, { recipe }: DeleteRecipe) {
         return this.recipeService.updateRecipe(Object.assign({}, recipe, { deleted: true })).pipe(
-            tap(timestamp => context.setState(patch({ recipes: removeItem<Recipe>(r => r._id === recipe._id) }))),
-            tap(_ => context.dispatch(new RecalculateTags()))
+            tap((_) => context.setState(patch({ recipes: removeItem<Recipe>((r) => r?._id === recipe._id) }))),
+            tap((_) => context.dispatch(new RecalculateTags()))
         );
     }
 
@@ -93,8 +93,8 @@ export class RecipeState {
         }
 
         return this.recipeService.getAllRecipes().pipe(
-            tap(recipes => context.patchState({ loaded: true, recipes })),
-            tap(_ => context.dispatch([new RecipesLoaded(), new RecalculateTags()]))
+            tap((recipes) => context.patchState({ loaded: true, recipes })),
+            tap((_) => context.dispatch([new RecipesLoaded(), new RecalculateTags()]))
         );
     }
 
@@ -111,7 +111,7 @@ export class RecipeState {
     @Action(RecalculateTags)
     private recalculateTags(context: StateContext<RecipeStateModel>) {
         const allTags: string[] = [];
-        const tagsPerRecipe = context.getState().recipes.map(r => r.tags || []);
+        const tagsPerRecipe = context.getState().recipes.map((r) => r.tags || []);
         for (const tags of tagsPerRecipe) {
             for (const tag of tags) {
                 if (allTags.indexOf(tag) === -1) {

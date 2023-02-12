@@ -29,7 +29,7 @@ export class AuthState {
 
     @Action(Login)
     login(ctx: StateContext<AuthStateModel>, action: Login) {
-        return this.authService.login(action.username, action.password).pipe(tap(token => ctx.patchState({ token })));
+        return this.authService.login(action.username, action.password).pipe(tap((token) => ctx.patchState({ token })));
     }
 
     @Action(Logout)
@@ -40,7 +40,7 @@ export class AuthState {
         }
 
         return this.authService.logout(token).pipe(
-            tap(_ => {
+            tap((_) => {
                 ctx.patchState({ token: null });
             })
         );

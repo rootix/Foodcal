@@ -10,12 +10,12 @@ import { AuthState, Logout } from 'src/app/shared/state/auth';
     styleUrls: ['./shell.component.scss'],
 })
 export class ShellComponent implements OnInit {
-    @Select(AuthState.isAuthenticated) isAuthenticated$: Observable<boolean>;
+    @Select(AuthState.isAuthenticated) isAuthenticated$!: Observable<boolean>;
 
     constructor(private store: Store, private actions$: Actions, private router: Router) {}
 
     ngOnInit() {
-        this.actions$.pipe(ofActionSuccessful(Logout)).subscribe(_ => this.router.navigate(['/login']));
+        this.actions$.pipe(ofActionSuccessful(Logout)).subscribe((_) => this.router.navigate(['/login']));
     }
 
     onLogout() {

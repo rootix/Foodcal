@@ -7,7 +7,7 @@ import { Meal } from '../../models/schedule.model';
     styleUrls: ['./meal-card.component.scss'],
 })
 export class MealCardComponent {
-    @Input() meal: Meal;
+    @Input() meal?: Meal;
 
     @Output() createMeal = new EventEmitter<Meal>();
     @Output() editMeal = new EventEmitter<Meal>();

@@ -10,33 +10,27 @@ import { Login } from 'src/app/shared/state/auth';
     styleUrls: ['./login-view.component.scss'],
 })
 export class LoginViewComponent {
-    loading: boolean;
-    loginFailed: boolean;
+    loading = false;
+    loginFailed = false;
 
     readonly form = new FormGroup({
-        username: new FormControl(null, Validators.required),
-        password: new FormControl(null, Validators.required),
+        username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required]}),
+        password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required]}),
     });
 
     constructor(private store: Store, private router: Router) {}
 
     onLogin() {
-        for (const i in this.form.controls) {
-            if (this.form.controls.hasOwnProperty(i)) {
-                this.form.controls[i].markAsDirty();
-                this.form.controls[i].updateValueAndValidity();
-            }
-        }
+        this.form.updateValueAndValidity();
 
         if (this.form.invalid) {
             return;
         }
 
         this.loading = true;
-        const { username, password } = this.form.value;
-        this.store.dispatch(new Login(username, password)).subscribe(
-            _ => this.router.navigate(['/schedule']),
-            _ => {
+        this.store.dispatch(new Login(this.form.controls.username.value, this.form.controls.password.value)).subscribe(
+            (_) => this.router.navigate(['/schedule']),
+            (_) => {
                 this.loading = false;
                 this.loginFailed = true;
             }
