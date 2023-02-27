@@ -1,0 +1,16 @@
+﻿query GetMealsOfWeek($from: Date!, $to: Date!, $size: Int!) {
+    allMealsInDateRange(from: $from, to: $to, _size: $size) {
+        data {
+            _id
+            _ts
+            date
+            recipe {
+                _id
+                name
+                url
+            }
+            type
+            notes
+        }
+    }
+}
