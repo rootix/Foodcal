@@ -7,6 +7,7 @@ const config: CodegenConfig = {
     './src/app/api.generated.ts': {
       plugins: ['typescript', 'typescript-operations', 'typescript-apollo-angular'],
       config: {
+        addExplicitOverride: true,
         defaultScalarType: "unknown",
         scalars: { "Date": "Date", "Long": "number" }
       }

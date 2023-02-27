@@ -250,7 +250,7 @@ export const GetMealsOfWeekDocument = gql`
     providedIn: 'root'
   })
   export class GetMealsOfWeekGQL extends Apollo.Query<GetMealsOfWeekQuery, GetMealsOfWeekQueryVariables> {
-    document = GetMealsOfWeekDocument;
+    override document = GetMealsOfWeekDocument;
     
     constructor(apollo: Apollo.Apollo) {
       super(apollo);
