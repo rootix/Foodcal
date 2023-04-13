@@ -3,12 +3,7 @@
     Neues Rezept
 </button>
 
-<nz-table
-    [nzData]="recipes"
-    [nzLoading]="loading"
-    nzSize="small"
-    [nzScroll]="{ x: '100' }"
->
+<nz-table [nzData]="recipes" [nzLoading]="loading" nzSize="small" [nzScroll]="{ x: '100' }">
     <thead>
         <tr>
             <th nzWidth="1.875rem"></th>
@@ -26,7 +21,7 @@
         </tr>
     </thead>
     <tbody>
-        <ng-container *ngFor="let recipe of recipeTable.data">
+        <ng-container *ngFor="let recipe of recipeTable?.data || []">
             <tr>
                 <td
                     *ngIf="recipe.note"

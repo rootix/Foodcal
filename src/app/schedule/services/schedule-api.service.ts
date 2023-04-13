@@ -1,157 +1,114 @@
 import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
-import { differenceInCalendarDays, format, startOfDay } from 'date-fns';
+import { Apollo } from 'apollo-angular';
+import { differenceInCalendarDays } from 'date-fns';
 import { map } from 'rxjs/operators';
-import { Meal, MealType } from '../models/schedule.model';
-
-interface GraphQlMeal extends Meal {}
+import {
+    CreateMealGQL,
+    CreateMealMutationVariables,
+    DeleteMealGQL,
+    DeleteMealMutationVariables,
+    GetMealsOfWeekGQL,
+    Meal,
+    UpdateMealGQL,
+    UpdateMealMutationVariables,
+} from '../../api.generated';
+import { Observable } from 'rxjs';
+import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ScheduleApiService {
-    constructor(private apollo: Apollo) {}
+    constructor(
+        private apollo: Apollo,
+        private getMealsOfWeekGQL: GetMealsOfWeekGQL,
+        private createMealGQL: CreateMealGQL,
+        private updateMealGQL: UpdateMealGQL,
+        private deleteMealGQL: DeleteMealGQL
+    ) {}
 
-    getMealsOfWeek(startDate: Date, endDate: Date) {
+    getMealsOfWeek(startDate: Date, endDate: Date): Observable<Meal[]> {
         const maxNumberOfMeals = (differenceInCalendarDays(endDate, startDate) + 1) * 2;
-        return this.apollo
-            .query<{ allMealsInDateRange: { data: GraphQlMeal[] } }>({
-                query: gql`
-                    query GetMealsOfWeek($from: Date!, $to: Date!, $size: Int!) {
-                        allMealsInDateRange(from: $from, to: $to, _size: $size) {
-                            data {
-                                _id
-                                date
-                                recipe {
-                                    _id
-                                    name
-                                    url
-                                }
-                                type
-                                notes
-                            }
-                        }
-                    }
-                `,
-                variables: {
-                    from: format(startDate, 'yyyy-MM-dd'),
-                    to: format(endDate, 'yyyy-MM-dd'),
-                    size: maxNumberOfMeals,
-                },
-            })
-            .pipe(
-                map((response) => response.data.allMealsInDateRange.data),
-                map((graphQlMeals) => graphQlMeals.map((m) => this.convertGraphQlMealToMeal(m))),
-                map((meals) => meals.filter((m) => m.date >= startDate)),
-                map((meals) => meals.filter((m) => m.date <= endDate))
-            );
+        const variables = {
+            from: toApiStringFromDate(startDate),
+            to: toApiStringFromDate(endDate),
+            size: maxNumberOfMeals,
+        };
+
+        return this.getMealsOfWeekGQL.fetch(variables).pipe(
+            map((response) => response.data.allMealsInDateRange.data || []),
+            map((meals) =>
+                meals.filter((m) => m != null && toDateFromApi(m.date) >= startDate && toDateFromApi(m.date) <= endDate)
+            ),
+            map((graphQlMeals) =>
+                graphQlMeals.map((m) =>
+                    m != null
+                        ? ({
+                              _id: m._id,
+                              _ts: m._ts,
+                              type: m.type,
+                              notes: m.notes,
+                              date: m.date,
+                              recipe: m.recipe ? { _id: m.recipe._id, name: m.recipe.name, url: m.recipe.url } : null,
+                          } as Meal)
+                        : null
+                )
+            ),
+            map((meals) => meals.filter((m) => m != null) as Meal[])
+        );
     }
 
     createMeal(meal: Meal) {
-        if (meal.recipe == undefined) {
-            throw Error('Recipe missing');
-        }
+        const variables: CreateMealMutationVariables = {
+            date: meal.date,
+            type: meal.type,
+            recipe: { connect: meal.recipe._id },
+            notes: meal.notes,
+        };
+        return this.createMealGQL.mutate(variables).pipe(
+            map((response) => {
+                if (!response.data) {
+                    throw Error('missing response');
+                }
 
-        return this.apollo
-            .mutate<{ createMeal: { _id: string } }>({
-                mutation: gql`
-                    mutation CreateMeal($date: Date!, $type: MealType!, $recipe: MealRecipeRelation!, $notes: String) {
-                        createMeal(data: { date: $date, type: $type, recipe: $recipe, notes: $notes }) {
-                            _id
-                        }
-                    }
-                `,
-                variables: {
-                    date: format(meal.date, 'yyyy-MM-dd'),
-                    type: MealType[meal.type],
-                    recipe: { connect: meal.recipe._id },
-                    notes: meal.notes,
-                },
+                return response.data.createMeal._id;
             })
-            .pipe(
-                map((response) => {
-                    if (!response.data) {
-                        throw Error('missing response');
-                    }
-
-                    return response.data.createMeal._id;
-                })
-            );
+        );
     }
 
     updateMeal(meal: Meal) {
-        if (meal.recipe == undefined) {
-            throw Error('Recipe missing');
-        }
+        const variables: UpdateMealMutationVariables = {
+            id: meal._id,
+            date: meal.date,
+            type: meal.type,
+            recipe: { connect: meal.recipe._id },
+            notes: meal.notes,
+        };
 
-        return this.apollo
-            .mutate<{ updateMeal: { _ts: number } }>({
-                mutation: gql`
-                    mutation UpdateMeal(
-                        $id: ID!
-                        $date: Date!
-                        $type: MealType!
-                        $recipe: MealRecipeRelation!
-                        $notes: String
-                    ) {
-                        updateMeal(id: $id, data: { date: $date, type: $type, recipe: $recipe, notes: $notes }) {
-                            _ts
-                        }
-                    }
-                `,
-                variables: {
-                    id: meal._id,
-                    date: format(meal.date, 'yyyy-MM-dd'),
-                    type: MealType[meal.type],
-                    recipe: { connect: meal.recipe._id },
-                    notes: meal.notes,
-                },
+        return this.updateMealGQL.mutate(variables).pipe(
+            map((response) => {
+                if (!response.data?.updateMeal) {
+                    throw Error('missing response');
+                }
+
+                return response.data.updateMeal._ts;
             })
-            .pipe(
-                map((response) => {
-                    if (!response.data) {
-                        throw Error('missing response');
-                    }
-
-                    return response.data.updateMeal._ts;
-                })
-            );
+        );
     }
 
     deleteMeal(id: string) {
-        return this.apollo
-            .mutate<{ deleteMeal: { _id: string } }>({
-                mutation: gql`
-                    mutation DeleteMeal($id: ID!) {
-                        deleteMeal(id: $id) {
-                            _id
-                        }
-                    }
-                `,
-                variables: {
-                    id,
-                },
-            })
-            .pipe(
-                map((response) => {
-                    if (!response.data) {
-                        throw Error('missing response');
-                    }
-
-                    return response.data.deleteMeal._id;
-                })
-            );
-    }
-
-    private convertGraphQlMealToMeal(graphQlMeal: GraphQlMeal): Meal {
-        return {
-            _id: graphQlMeal._id,
-            date: startOfDay(new Date(graphQlMeal.date)),
-            recipe: graphQlMeal.recipe
-                ? { _id: graphQlMeal.recipe._id, name: graphQlMeal.recipe.name, url: graphQlMeal.recipe.url }
-                : undefined,
-            type: graphQlMeal.type,
-            notes: graphQlMeal.notes,
+        const variables: DeleteMealMutationVariables = {
+            id,
         };
+
+        return this.deleteMealGQL.mutate(variables).pipe(
+            map((response) => {
+                if (!response.data?.deleteMeal) {
+                    throw Error('missing response');
+                }
+
+                return response.data.deleteMeal._id;
+            })
+        );
     }
 }

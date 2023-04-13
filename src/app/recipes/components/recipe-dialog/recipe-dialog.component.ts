@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
-import { EMPTY, Observable } from "rxjs";
+import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { Recipe } from 'src/app/shared/models';
 import { RecipeState } from 'src/app/shared/state/recipe';
+import { Recipe } from '../../../api.generated';
 
 @Component({
     selector: 'fc-recipe-dialog',

@@ -1,5 +1,1 @@
-{
-    "/.netlify/functions": {
-        "target": "http://localhost:34567"
-    }
-}
+{}

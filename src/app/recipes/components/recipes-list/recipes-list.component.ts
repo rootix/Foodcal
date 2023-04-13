@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { Select } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Recipe } from 'src/app/shared/models';
 import { RecipeState } from 'src/app/shared/state/recipe';
-import { NzTableComponent } from "ng-zorro-antd/table";
+import { NzTableComponent } from 'ng-zorro-antd/table';
+import { RecipeWithLastPreparation } from '../../../shared/models/recipe.model';
 
 @Component({
     selector: 'fc-recipes-list',
@@ -12,17 +12,17 @@ import { NzTableComponent } from "ng-zorro-antd/table";
     styleUrls: ['./recipes-list.component.scss'],
 })
 export class RecipesListComponent {
-    @Input() recipes: Recipe[] = [];
+    @Input() recipes: RecipeWithLastPreparation[] = [];
     @Input() loading = false;
     @Output() createRecipe = new EventEmitter();
-    @Output() editRecipe = new EventEmitter<Recipe>();
-    @Output() deleteRecipe = new EventEmitter<Recipe>();
+    @Output() editRecipe = new EventEmitter<RecipeWithLastPreparation>();
+    @Output() deleteRecipe = new EventEmitter<RecipeWithLastPreparation>();
 
     @Select(RecipeState.getTags) private tagsFromStore$!: Observable<string[]>;
     tags$: Observable<{ text: string; value: string }[]>;
 
     expandSet = new Set<string>();
-    @ViewChild(NzTableComponent) recipeTable?: NzTableComponent<Recipe>
+    @ViewChild(NzTableComponent) recipeTable?: NzTableComponent<RecipeWithLastPreparation>;
 
     constructor() {
         this.tags$ = this.tagsFromStore$.pipe(
@@ -31,11 +31,11 @@ export class RecipesListComponent {
         );
     }
 
-    sortByName(a: Recipe, b: Recipe) {
+    sortByName(a: RecipeWithLastPreparation, b: RecipeWithLastPreparation) {
         return a.name.localeCompare(b.name);
     }
 
-    sortByLastPreparation(a: Recipe, b: Recipe) {
+    sortByLastPreparation(a: RecipeWithLastPreparation, b: RecipeWithLastPreparation) {
         if (!a.lastPreparation && !b.lastPreparation) {
             return 0;
         } else if (!a.lastPreparation) {
@@ -47,12 +47,12 @@ export class RecipesListComponent {
         return a.lastPreparation > b.lastPreparation ? 1 : a.lastPreparation === b.lastPreparation ? 0 : -1;
     }
 
-    filterByTags(tags: string[], recipe: Recipe) {
+    filterByTags(tags: string[], recipe: RecipeWithLastPreparation) {
         if (!recipe.tags) {
             return false;
         }
 
-        return tags.some((tag) => recipe.tags!.indexOf(tag) !== -1);
+        return tags.some((tag) => (recipe.tags ? recipe.tags.indexOf(tag) !== -1 : false));
     }
 
     onExpandChange(id: string, checked: boolean): void {

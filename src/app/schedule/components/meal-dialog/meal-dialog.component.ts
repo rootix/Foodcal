@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
-import { EMPTY, Observable } from "rxjs";
+import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { Recipe } from 'src/app/shared/models';
 import { EnsureLoadAllRecipes, RecipeState } from 'src/app/shared/state/recipe';
-import { Meal } from '../../models/schedule.model';
+import { Meal, Recipe } from '../../../api.generated';
 
 @Component({
     selector: 'fc-meal-dialog',
@@ -28,9 +27,9 @@ export class MealDialogComponent implements OnInit {
 
     submitLoading = false;
 
-    private submitHandler: (meal: Meal) => Observable<void> = (_) => EMPTY;
-
     constructor(private store: Store) {}
+
+    private submitHandler: (meal: Meal) => Observable<void> = (_) => EMPTY;
 
     ngOnInit() {
         this.store.dispatch(new EnsureLoadAllRecipes());

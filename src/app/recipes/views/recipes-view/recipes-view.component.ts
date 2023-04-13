@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
-import { Recipe } from 'src/app/shared/models';
 import {
     CreateRecipe,
     DeleteRecipe,
@@ -11,6 +10,8 @@ import {
     UpdateRecipe,
 } from 'src/app/shared/state/recipe';
 import { RecipeDialogComponent } from '../../components/recipe-dialog/recipe-dialog.component';
+import { RecipeWithLastPreparation } from '../../../shared/models/recipe.model';
+import { Recipe } from '../../../api.generated';
 
 @Component({
     selector: 'fc-recipes-view',
@@ -19,7 +20,7 @@ import { RecipeDialogComponent } from '../../components/recipe-dialog/recipe-dia
 export class RecipesViewComponent implements OnInit {
     @ViewChild(RecipeDialogComponent) dialog?: RecipeDialogComponent;
 
-    @Select(RecipeState.getAllRecipes) recipes$!: Observable<Recipe[]>;
+    @Select(RecipeState.getAllRecipes) recipes$!: Observable<RecipeWithLastPreparation[]>;
     @Select(RecipeState.loading) loading$!: Observable<boolean>;
 
     constructor(private store: Store, private modalService: NzModalService) {}
@@ -29,19 +30,19 @@ export class RecipesViewComponent implements OnInit {
     }
 
     onCreateRecipe() {
-      if (!this.dialog) {
-        throw Error("no dialog present");
-      }
+        if (!this.dialog) {
+            throw Error('no dialog present');
+        }
 
-      this.dialog.open({} as Recipe, (r) => this.store.dispatch(new CreateRecipe(r)));
+        this.dialog.open({} as Recipe, (r) => this.store.dispatch(new CreateRecipe(r)));
     }
 
     onEditRecipe(recipe: Recipe) {
-      if (!this.dialog) {
-        throw Error("no dialog present");
-      }
+        if (!this.dialog) {
+            throw Error('no dialog present');
+        }
 
-      this.dialog.open(recipe, (r) => this.store.dispatch(new UpdateRecipe(r)));
+        this.dialog.open(recipe, (r) => this.store.dispatch(new UpdateRecipe(r)));
     }
 
     onDeleteRecipe(recipe: Recipe) {

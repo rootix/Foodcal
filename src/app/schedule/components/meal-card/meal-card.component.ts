@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Meal } from '../../models/schedule.model';
+import { Meal, MealType } from '../../../api.generated';
 
 @Component({
     selector: 'fc-meal-card',
@@ -12,6 +12,8 @@ export class MealCardComponent {
     @Output() createMeal = new EventEmitter<Meal>();
     @Output() editMeal = new EventEmitter<Meal>();
     @Output() deleteMeal = new EventEmitter<Meal>();
+
+    MealType = MealType;
 
     get isNew() {
         return !this.meal || this.meal._id == null;

@@ -1,142 +1,87 @@
 import { Injectable } from '@angular/core';
-import { Apollo, gql } from 'apollo-angular';
 import { isFuture, max, startOfDay } from 'date-fns';
 import { map } from 'rxjs/operators';
-import { Recipe } from '../models';
-
-interface GraphQlRecipe extends Recipe {
-  meals: { data: { date: string }[] }
-}
-
+import {
+    CreateRecipeGQL,
+    CreateRecipeMutationVariables,
+    GetAllRecipesGQL,
+    Recipe,
+    UpdateRecipeGQL,
+    UpdateRecipeMutationVariables,
+} from '../../api.generated';
+import { RecipeWithLastPreparation } from '../models/recipe.model';
+import { Observable } from 'rxjs';
+import { toDateFromApi } from '../utils/date-utils';
 
 @Injectable({ providedIn: 'root' })
 export class RecipeApiService {
-    constructor(private apollo: Apollo) {}
+    constructor(
+        private getAllRecipesQuery: GetAllRecipesGQL,
+        private createRecipeMutation: CreateRecipeGQL,
+        private updateRecipeMutation: UpdateRecipeGQL
+    ) {}
 
-    getAllRecipes() {
-        // TODO: The Join to meals is super inefficient as i only need the newest date. Learn FQL -.-
-        return this.apollo
-            .query<{ allRecipesByDeletedFlag: { data: GraphQlRecipe[] } }>({
-                query: gql`
-                    query GetAllRecipes {
-                        allRecipesByDeletedFlag(_size: 1000, deleted: false) {
-                            data {
-                                _id
-                                name
-                                url
-                                note
-                                tags
-                                deleted
-                                meals(_size: 1000) {
-                                    data {
-                                        date
-                                    }
-                                }
-                            }
-                        }
-                    }
-                `,
-            })
-            .pipe(
-                map((response) => response.data.allRecipesByDeletedFlag.data),
-                map((graphQlRecipes) => graphQlRecipes.map((r) => this.convertGraphQlRecipeToRecipe(r)))
-            );
+    getAllRecipes(): Observable<RecipeWithLastPreparation[]> {
+        const variables = {};
+        return this.getAllRecipesQuery.fetch(variables).pipe(
+            map((response) => response.data.allRecipesByDeletedFlag.data),
+            map((recipes) =>
+                recipes.map((recipe) =>
+                    recipe
+                        ? {
+                              _id: recipe._id,
+                              name: recipe.name,
+                              url: recipe.url,
+                              lastPreparation:
+                                  this.getNewestNonFutureDateFromGraphQlDates(
+                                      recipe.meals.data.reduce<Date[]>((dates, curr) => {
+                                          if (curr !== null) {
+                                              dates.push(toDateFromApi(curr.date));
+                                          }
+                                          return dates;
+                                      }, [])
+                                  ) ?? undefined,
+                              note: recipe.note,
+                              tags: recipe.tags,
+                              deleted: recipe.deleted,
+                          }
+                        : null
+                )
+            ),
+            map((recipes) => recipes.filter((r) => r != null) as RecipeWithLastPreparation[])
+        );
     }
 
     createRecipe(recipe: Recipe) {
-        return this.apollo
-            .mutate<{ createRecipe: { _id: string } }>({
-                mutation: gql`
-                    mutation CreateRecipe(
-                        $name: String!
-                        $url: String
-                        $note: String
-                        $deleted: Boolean!
-                        $tags: [String!]
-                    ) {
-                        createRecipe(data: { name: $name, url: $url, note: $note, deleted: $deleted, tags: $tags }) {
-                            _id
-                        }
-                    }
-                `,
-                variables: {
-                    name: recipe.name,
-                    url: recipe.url,
-                    note: recipe.note,
-                    deleted: recipe.deleted || false,
-                    tags: recipe.tags || [],
-                },
-            })
-            .pipe(
-                map((response) => {
-                    if (!response.data) {
-                        throw Error('missing response');
-                    }
+        const variables: CreateRecipeMutationVariables = {
+            name: recipe.name,
+            url: recipe.url,
+            note: recipe.note,
+            deleted: false,
+            tags: recipe.tags || [],
+        };
 
-                    return response.data.createRecipe._id;
-                })
-            );
+        return this.createRecipeMutation.mutate(variables).pipe(map((response) => response.data?.createRecipe._id));
     }
 
     updateRecipe(recipe: Recipe) {
-        return this.apollo
-            .mutate<{ updateRecipe: { _ts: number } }>({
-                mutation: gql`
-                    mutation UpdateRecipe(
-                        $id: ID!
-                        $name: String!
-                        $url: String
-                        $note: String
-                        $deleted: Boolean!
-                        $tags: [String!]
-                    ) {
-                        updateRecipe(
-                            id: $id
-                            data: { name: $name, url: $url, note: $note, deleted: $deleted, tags: $tags }
-                        ) {
-                            _ts
-                        }
-                    }
-                `,
-                variables: {
-                    id: recipe._id,
-                    name: recipe.name,
-                    url: recipe.url,
-                    note: recipe.note,
-                    deleted: recipe.deleted || false,
-                    tags: recipe.tags || [],
-                },
-            })
-            .pipe(
-                map((response) => {
-                    if (!response.data) {
-                        throw Error('missing response');
-                    }
-
-                    return response.data.updateRecipe._ts;
-                })
-            );
-    }
-
-    private convertGraphQlRecipeToRecipe(graphQlRecipe: GraphQlRecipe): Recipe {
-        return {
-            _id: graphQlRecipe._id,
-            name: graphQlRecipe.name,
-            url: graphQlRecipe.url,
-            lastPreparation:
-                this.getNewestNonFutureDateFromGraphQlDates(graphQlRecipe.meals.data.map((d) => d.date)) ?? undefined,
-            note: graphQlRecipe.note,
-            tags: graphQlRecipe.tags,
-            deleted: graphQlRecipe.deleted,
+        const variables: UpdateRecipeMutationVariables = {
+            id: recipe._id,
+            name: recipe.name,
+            url: recipe.url,
+            note: recipe.note,
+            deleted: recipe.deleted || false,
+            tags: recipe.tags || [],
         };
+        return this.updateRecipeMutation.mutate(variables).pipe(map((response) => response.data?.updateRecipe?._ts));
     }
 
-    private getNewestNonFutureDateFromGraphQlDates(datesAsString: string[]): Date | null {
-        if (datesAsString == null || !datesAsString.length) {
+    private getNewestNonFutureDateFromGraphQlDates(dates: Date[]): Date | null {
+        if (dates == null || !dates.length) {
             return null;
         }
 
-        const parsedDates = datesAsString.map((d) => startOfDay(new Date(d)));
+        const parsedDates = dates.map((d) => startOfDay(d));
         const datesNotInFuture = parsedDates.filter((d) => !isFuture(d));
         if (!datesNotInFuture.length) {
             return null;

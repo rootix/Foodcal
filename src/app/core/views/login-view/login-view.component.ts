@@ -14,8 +14,8 @@ export class LoginViewComponent {
     loginFailed = false;
 
     readonly form = new FormGroup({
-        username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required]}),
-        password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required]}),
+        username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+        password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     });
 
     constructor(private store: Store, private router: Router) {}

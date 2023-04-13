@@ -1,8 +1,7 @@
-import { Injectable, Predicate } from "@angular/core";
+import { Injectable, Predicate } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { append, patch, removeItem, updateItem } from '@ngxs/store/operators';
 import { map, tap } from 'rxjs/operators';
-import { Recipe } from '../../models/recipes.model';
 import { RecipeApiService } from '../../services/recipe-api.service';
 import {
     CreateRecipe,
@@ -13,11 +12,13 @@ import {
     RecipeLoading as RecipesLoading,
     UpdateRecipe,
 } from './recipe.actions';
+import { Recipe } from '../../../api.generated';
+import { RecipeWithLastPreparation } from '../../models/recipe.model';
 
 interface RecipeStateModel {
     loaded: boolean;
     loading: boolean;
-    recipes: Recipe[];
+    recipes: RecipeWithLastPreparation[];
     tags: string[];
 }
 
@@ -67,7 +68,7 @@ export class RecipeState {
                 context.setState(
                     patch({
                         recipes: updateItem<Recipe>(
-                            r => r?._id === recipe._id,
+                            (r) => r?._id === recipe._id,
                             patch(Object.assign({}, recipe, { _ts: timestamp } as Recipe))
                         ),
                     })

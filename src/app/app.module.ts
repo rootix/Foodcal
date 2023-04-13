@@ -44,11 +44,7 @@ const provideApolloFn = (httpLink: HttpLink) => {
         },
     }));
 
-    const token = localStorage.getItem('auth.token');
-    if (!token) {
-        throw Error('token not present');
-    }
-
+    const token = localStorage.getItem('auth.token') ?? '';
     const auth = setContext((operation, context) => ({
         headers: {
             // eslint-disable-next-line @typescript-eslint/naming-convention

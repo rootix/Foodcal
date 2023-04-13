@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { Week } from '../../models/schedule.model';
-import { getCurrentWeek } from "../../utils/week-utils";
+import { getCurrentWeek } from '../../utils/week-utils';
 
 @Component({
     selector: 'fc-week-selector',

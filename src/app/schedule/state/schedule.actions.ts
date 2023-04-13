@@ -1,4 +1,4 @@
-import { Meal } from '../models/schedule.model';
+import { Meal } from '../../api.generated';
 
 export class SwitchToNextWeek {
     static readonly type = '[Schedule] Switch To Next Week';

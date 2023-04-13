@@ -3,7 +3,6 @@ import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
 import { append, patch, removeItem, updateItem } from '@ngxs/store/operators';
 import { addDays, eachDayOfInterval } from 'date-fns';
 import { mergeMap, switchMap, tap } from 'rxjs/operators';
-import { Meal, MealsPerDay, MealType, Week } from '../models/schedule.model';
 import { ScheduleApiService } from '../services/schedule-api.service';
 import {
     CreateMeal,
@@ -16,7 +15,10 @@ import {
     WeekLoaded,
     WeekLoading,
 } from './schedule.actions';
-import { getCurrentWeek, getWeekForDate } from "../utils/week-utils";
+import { getCurrentWeek, getWeekForDate } from '../utils/week-utils';
+import { MealsPerDay, Week } from '../models/schedule.model';
+import { Meal, MealType } from '../../api.generated';
+import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
 
 interface ScheduleStateModel {
     loading: boolean;
@@ -55,19 +57,23 @@ export class ScheduleState implements NgxsOnInit {
         const mealsPerDay: MealsPerDay[] = [];
         const interval = eachDayOfInterval({ start: startDate, end: endDate });
         interval.forEach((date: Date) => {
-            const lunch = existingMeals.find(
-                (m) => m.date.getTime() === date.getTime() && m.type === MealType.Lunch
-            ) || {
-                date,
-                type: MealType.Lunch,
-            };
+            const lunch =
+                existingMeals.find(
+                    (m) => toDateFromApi(m.date).getTime() === date.getTime() && m.type === MealType.Lunch
+                ) ||
+                ({
+                    date: toApiStringFromDate(date),
+                    type: MealType.Lunch,
+                } as Meal);
 
-            const dinner = existingMeals.find(
-                (m) => m.date.getTime() === date.getTime() && m.type === MealType.Dinner
-            ) || {
-                date,
-                type: MealType.Dinner,
-            };
+            const dinner =
+                existingMeals.find(
+                    (m) => toDateFromApi(m.date).getTime() === date.getTime() && m.type === MealType.Dinner
+                ) ||
+                ({
+                    date: toApiStringFromDate(date),
+                    type: MealType.Dinner,
+                } as Meal);
 
             const day: MealsPerDay = {
                 date,
@@ -124,7 +130,7 @@ export class ScheduleState implements NgxsOnInit {
     @Action(EnsureInitializeSchedule)
     private ensureInitializeSchedule(ctx: StateContext<ScheduleStateModel>) {
         const currentState = ctx.getState();
-        if (currentState.mealsOfWeek != null) {
+        if (currentState.mealsOfWeek.length > 0) {
             return;
         }
 
@@ -167,5 +173,4 @@ export class ScheduleState implements NgxsOnInit {
     private weekLoaded(ctx: StateContext<ScheduleStateModel>) {
         ctx.patchState({ loading: false });
     }
-
 }

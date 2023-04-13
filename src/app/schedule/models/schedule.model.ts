@@ -1,17 +1,4 @@
-import { Recipe } from 'src/app/shared/models';
-
-export enum MealType {
-    Lunch,
-    Dinner,
-}
-export interface Meal {
-    _id?: string;
-    date: Date;
-    type: MealType;
-    recipe?: Recipe;
-    notes?: string;
-    _ts?: number;
-}
+import { Meal } from '../../api.generated';
 
 export interface Week {
     calendarWeek: number;

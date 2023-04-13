@@ -34,7 +34,7 @@
                         ],
                         "styles": ["src/styles/main.less"],
                         "scripts": [],
-                        "allowedCommonJsDependencies": ["graphql-tag", "zen-observable"],
+                        "allowedCommonJsDependencies": ["graphql-tag", "zen-observable"]
                     },
                     "configurations": {
                         "production": {
@@ -52,14 +52,14 @@
                                 }
                             ]
                         },
-                      "development": {
-                        "buildOptimizer": false,
-                        "optimization": false,
-                        "vendorChunk": true,
-                        "extractLicenses": false,
-                        "sourceMap": true,
-                        "namedChunks": true
-                      }
+                        "development": {
+                            "buildOptimizer": false,
+                            "optimization": false,
+                            "vendorChunk": true,
+                            "extractLicenses": false,
+                            "sourceMap": true,
+                            "namedChunks": true
+                        }
                     },
                     "defaultConfiguration": "production"
                 },
@@ -73,11 +73,11 @@
                         "production": {
                             "browserTarget": "Foodcal:build:production"
                         },
-                      "development": {
-                        "browserTarget": "Foodcal:build:development"
-                      }
+                        "development": {
+                            "browserTarget": "Foodcal:build:development"
+                        }
                     },
-                  "defaultConfiguration": "development"
+                    "defaultConfiguration": "development"
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
@@ -102,7 +102,7 @@
                     "options": {
                         "lintFilePatterns": ["src/**/*.ts", "src/**/*.html"]
                     }
-                },
+                }
             }
         }
     },
