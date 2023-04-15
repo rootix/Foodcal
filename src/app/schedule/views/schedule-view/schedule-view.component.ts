@@ -10,9 +10,9 @@ import { ScheduleState } from '../../state/schedule.state';
     templateUrl: './schedule-view.component.html',
 })
 export class ScheduleViewComponent implements OnInit {
-    @Select(ScheduleState.week) public week$: Observable<Week>;
-    @Select(ScheduleState.mealsOfWeek) public mealsOfWeek$: Observable<MealsPerDay[]>;
-    @Select(ScheduleState.loading) public loading$: Observable<boolean>;
+    @Select(ScheduleState.week) public week$!: Observable<Week>;
+    @Select(ScheduleState.mealsOfWeek) public mealsOfWeek$!: Observable<MealsPerDay[]>;
+    @Select(ScheduleState.loading) public loading$!: Observable<boolean>;
 
     constructor(private store: Store) {}
 

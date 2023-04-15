@@ -44,10 +44,11 @@ const provideApolloFn = (httpLink: HttpLink) => {
         },
     }));
 
+    const token = localStorage.getItem('auth.token') ?? '';
     const auth = setContext((operation, context) => ({
         headers: {
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            Authorization: `Bearer ${JSON.parse(localStorage.getItem('auth.token'))}`,
+            Authorization: `Bearer ${JSON.parse(token)}`,
         },
     }));
 
@@ -78,7 +79,7 @@ const provideApolloFn = (httpLink: HttpLink) => {
         }),
         ScheduleModule,
         NgxsReduxDevtoolsPluginModule.forRoot(),
-        ApolloModule
+        ApolloModule,
     ],
     bootstrap: [AppComponent],
     providers: [

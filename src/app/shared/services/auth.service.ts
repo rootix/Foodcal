@@ -16,6 +16,6 @@ export class AuthService {
     logout(token: string) {
         return this.httpClient
             .post<boolean>('/.netlify/functions/logout', JSON.stringify({ token }))
-            .pipe(catchError(_ => of(false)));
+            .pipe(catchError((_) => of(false)));
     }
 }

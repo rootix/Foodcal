@@ -3,14 +3,7 @@
     Neues Rezept
 </button>
 
-<nz-table
-    #recipeTable
-    nzSize="middle"
-    [nzData]="recipes"
-    [nzLoading]="loading"
-    nzSize="small"
-    [nzScroll]="{ x: true, y: null }"
->
+<nz-table [nzData]="recipes" [nzLoading]="loading" nzSize="small" [nzScroll]="{ x: '100' }">
     <thead>
         <tr>
             <th nzWidth="1.875rem"></th>
@@ -23,12 +16,12 @@
                 Name
             </th>
             <th [nzSortFn]="sortByLastPreparation" nzWidth="12.5rem">Letzte Zubereitung</th>
-            <th nzWidth="12.5rem" [nzFilters]="tags$ | async" [nzFilterFn]="filterByTags">Tags</th>
+            <th nzWidth="12.5rem" [nzFilters]="(tags$ | async)!" [nzFilterFn]="filterByTags">Tags</th>
             <th nzWidth="5.625rem"></th>
         </tr>
     </thead>
     <tbody>
-        <ng-container *ngFor="let recipe of recipeTable.data">
+        <ng-container *ngFor="let recipe of recipeTable?.data || []">
             <tr>
                 <td
                     *ngIf="recipe.note"

@@ -7,7 +7,7 @@ import { isToday } from 'date-fns';
     styleUrls: ['./day-container.component.scss'],
 })
 export class DayContainerComponent {
-    @Input() date: Date;
+    @Input() date: Date = new Date();
 
     get isToday() {
         return this.date && isToday(this.date);

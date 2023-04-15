@@ -1,4 +1,4 @@
-import { Recipe } from '../../models/recipes.model';
+import { Recipe } from '../../../api.generated';
 
 export class CreateRecipe {
     static readonly type = '[Recipe] Create Recipe';

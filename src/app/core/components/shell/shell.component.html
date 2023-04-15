@@ -12,7 +12,7 @@
             <li *ngIf="isAuthenticated$ | async" nz-menu-item nzMatchRouter>
                 <a routerLink="/recipes"><span class="nav-text">Rezepte</span> </a>
             </li>
-            <li *ngIf="isAuthenticated$ | async" nz-menu-item style="margin-top: 4rem;">
+            <li *ngIf="isAuthenticated$ | async" nz-menu-item style="margin-top: 4rem">
                 <a href="javascript:void(0);" (click)="onLogout()" class="nav-link nav-icon">
                     <i nz-icon nzType="logout" style="color: #fff"></i> Logout
                 </a>

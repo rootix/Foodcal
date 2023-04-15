@@ -1,0 +1,261 @@
+directive @embedded on OBJECT
+
+directive @collection(name: String!) on OBJECT
+
+directive @index(name: String!) on FIELD_DEFINITION
+
+directive @resolver(
+  name: String
+  paginated: Boolean! = false
+) on FIELD_DEFINITION
+
+directive @relation(name: String) on FIELD_DEFINITION
+
+directive @unique(index: String) on FIELD_DEFINITION
+
+# 'Meal' input values
+input MealInput {
+  date: Date!
+  type: MealType!
+  recipe: MealRecipeRelation
+  notes: String
+}
+
+# Allow manipulating the relationship between the types 'Meal' and 'Recipe' using the field 'Meal.recipe'.
+input MealRecipeRelation {
+  # Create a document of type 'Recipe' and associate it with the current document.
+  create: RecipeInput
+
+  # Connect a document of type 'Recipe' with the current document using its ID.
+  connect: ID
+}
+
+type Mutation {
+  # Delete an existing document in the collection of 'Recipe'
+  deleteRecipe(
+    # The 'Recipe' document's ID
+    id: ID!
+  ): Recipe
+
+  # Update an existing document in the collection of 'Recipe'
+  updateRecipe(
+    # The 'Recipe' document's ID
+    id: ID!
+
+    # 'Recipe' input values
+    data: RecipeInput!
+  ): Recipe
+
+  # Partially updates an existing document in the collection of 'Recipe'. It only modifies the values that are specified in the arguments. During execution, it verifies that required fields are not set to 'null'.
+  partialUpdateRecipe(
+    # The 'Recipe' document's ID
+    id: ID!
+
+    # 'Recipe' input values
+    data: PartialUpdateRecipeInput!
+  ): Recipe
+
+  # Delete an existing document in the collection of 'Meal'
+  deleteMeal(
+    # The 'Meal' document's ID
+    id: ID!
+  ): Meal
+
+  # Create a new document in the collection of 'Meal'
+  createMeal(
+    # 'Meal' input values
+    data: MealInput!
+  ): Meal!
+
+  # Partially updates an existing document in the collection of 'Meal'. It only modifies the values that are specified in the arguments. During execution, it verifies that required fields are not set to 'null'.
+  partialUpdateMeal(
+    # The 'Meal' document's ID
+    id: ID!
+
+    # 'Meal' input values
+    data: PartialUpdateMealInput!
+  ): Meal
+
+  # Update an existing document in the collection of 'Meal'
+  updateMeal(
+    # The 'Meal' document's ID
+    id: ID!
+
+    # 'Meal' input values
+    data: MealInput!
+  ): Meal
+
+  # Create a new document in the collection of 'Recipe'
+  createRecipe(
+    # 'Recipe' input values
+    data: RecipeInput!
+  ): Recipe!
+}
+
+# 'Meal' input values
+input PartialUpdateMealInput {
+  date: Date
+  type: MealType
+  recipe: MealRecipeRelation
+  notes: String
+}
+
+# 'Recipe' input values
+input PartialUpdateRecipeInput {
+  name: String
+  url: String
+  note: String
+  tags: [String!]
+  deleted: Boolean
+  meals: RecipeMealsRelation
+}
+
+# 'Recipe' input values
+input RecipeInput {
+  name: String!
+  url: String
+  note: String
+  tags: [String!]
+  deleted: Boolean!
+  meals: RecipeMealsRelation
+}
+
+# Allow manipulating the relationship between the types 'Recipe' and 'Meal'.
+input RecipeMealsRelation {
+  # Create one or more documents of type 'Meal' and associate them with the current document.
+  create: [MealInput]
+
+  # Connect one or more documents of type 'Meal' with the current document using their IDs.
+  connect: [ID]
+
+  # Disconnect the given documents of type 'Meal' from the current document using their IDs.
+  disconnect: [ID]
+}
+
+scalar Time
+
+scalar Date
+
+type Meal {
+  recipe: Recipe!
+
+  # The document's ID.
+  _id: ID!
+  date: Date!
+  notes: String
+  type: MealType!
+
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# The pagination object for elements of type 'Meal'.
+type MealPage {
+  # The elements of type 'Meal' in this page.
+  data: [Meal]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+enum MealType {
+  Lunch
+  Dinner
+}
+
+type Query {
+  allRecipesByDeletedFlag(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+    deleted: Boolean!
+  ): RecipePage!
+  allRecipes(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): RecipePage!
+
+  # Find a document from the collection of 'Meal' by its id.
+  findMealByID(
+    # The 'Meal' document's ID
+    id: ID!
+  ): Meal
+
+  # Find a document from the collection of 'Recipe' by its id.
+  findRecipeByID(
+    # The 'Recipe' document's ID
+    id: ID!
+  ): Recipe
+  allMealsInDateRange(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+    from: Date!
+    to: Date!
+  ): QueryAllMealsInDateRangePage!
+  allMeals(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): MealPage!
+}
+
+# The pagination object for elements of type 'Meal'.
+type QueryAllMealsInDateRangePage {
+  # The elements of type 'Meal' in this page.
+  data: [Meal]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+type Recipe {
+  name: String!
+  meals(
+    # The number of items to return per page.
+    _size: Int
+
+    # The pagination cursor.
+    _cursor: String
+  ): MealPage!
+  url: String
+
+  # The document's ID.
+  _id: ID!
+  tags: [String!]
+  note: String
+  deleted: Boolean!
+
+  # The document's timestamp.
+  _ts: Long!
+}
+
+# The pagination object for elements of type 'Recipe'.
+type RecipePage {
+  # The elements of type 'Recipe' in this page.
+  data: [Recipe]!
+
+  # A cursor for elements coming after the current page.
+  after: String
+
+  # A cursor for elements coming before the current page.
+  before: String
+}
+
+# The `Long` scalar type represents non-fractional signed whole numeric values. Long can represent values between -(2^63) and 2^63 - 1.
+scalar Long

@@ -1,31 +1,31 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
-import { Observable } from 'rxjs';
+import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
-import { Recipe } from 'src/app/shared/models';
 import { RecipeState } from 'src/app/shared/state/recipe';
+import { Recipe } from '../../../api.generated';
 
 @Component({
     selector: 'fc-recipe-dialog',
     templateUrl: './recipe-dialog.component.html',
 })
 export class RecipeDialogComponent {
-    @Select(RecipeState.getTags) tags$: Observable<string[]>;
+    @Select(RecipeState.getTags) tags$!: Observable<string[]>;
 
     isOpen = false;
     isNew = false;
 
-    readonly form = new FormGroup({
-        _id: new FormControl(null, Validators.required),
-        name: new FormControl(null, Validators.required),
-        url: new FormControl(),
-        tags: new FormControl(),
-        note: new FormControl(),
+    readonly form = new UntypedFormGroup({
+        _id: new UntypedFormControl(null, Validators.required),
+        name: new UntypedFormControl(null, Validators.required),
+        url: new UntypedFormControl(),
+        tags: new UntypedFormControl(),
+        note: new UntypedFormControl(),
     });
 
-    loading: boolean;
-    private submitHandler: (recipe: Recipe) => Observable<void>;
+    loading = false;
+    private submitHandler: (recipe: Recipe) => Observable<void> = (_) => EMPTY;
 
     open(recipe: Recipe, submitHandler: (recipe: Recipe) => Observable<void>) {
         this.form.reset();
@@ -54,7 +54,7 @@ export class RecipeDialogComponent {
         this.loading = true;
         this.submitHandler({ ...this.form.value })
             .pipe(finalize(() => (this.loading = false)))
-            .subscribe(_ => {
+            .subscribe((_) => {
                 this.isOpen = false;
             });
     }

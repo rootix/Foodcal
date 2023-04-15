@@ -1,7 +1,7 @@
 <h1 class="page-title">Rezepte</h1>
 <fc-recipes-list
-    [loading]="loading$ | async"
-    [recipes]="recipes$ | async"
+    [loading]="(loading$ | async)!"
+    [recipes]="(recipes$ | async)!"
     (createRecipe)="onCreateRecipe()"
     (editRecipe)="onEditRecipe($event)"
     (deleteRecipe)="onDeleteRecipe($event)"
