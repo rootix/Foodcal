@@ -6,44 +6,46 @@ export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
 export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: Maybe<T[SubKey]> };
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
+export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
+export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
-    ID: string;
-    String: string;
-    Boolean: boolean;
-    Int: number;
-    Float: number;
-    Date: string;
-    Long: number;
-    Time: unknown;
+    ID: { input: string; output: string };
+    String: { input: string; output: string };
+    Boolean: { input: boolean; output: boolean };
+    Int: { input: number; output: number };
+    Float: { input: number; output: number };
+    Date: { input: string; output: string };
+    Long: { input: number; output: number };
+    Time: { input: unknown; output: unknown };
 };
 
 export type Meal = {
     __typename?: 'Meal';
-    _id: Scalars['ID'];
-    _ts: Scalars['Long'];
-    date: Scalars['Date'];
-    notes?: Maybe<Scalars['String']>;
+    _id: Scalars['ID']['output'];
+    _ts: Scalars['Long']['output'];
+    date: Scalars['Date']['output'];
+    notes?: Maybe<Scalars['String']['output']>;
     recipe: Recipe;
     type: MealType;
 };
 
 export type MealInput = {
-    date: Scalars['Date'];
-    notes?: InputMaybe<Scalars['String']>;
+    date: Scalars['Date']['input'];
+    notes?: InputMaybe<Scalars['String']['input']>;
     recipe?: InputMaybe<MealRecipeRelation>;
     type: MealType;
 };
 
 export type MealPage = {
     __typename?: 'MealPage';
-    after?: Maybe<Scalars['String']>;
-    before?: Maybe<Scalars['String']>;
+    after?: Maybe<Scalars['String']['output']>;
+    before?: Maybe<Scalars['String']['output']>;
     data: Array<Maybe<Meal>>;
 };
 
 export type MealRecipeRelation = {
-    connect?: InputMaybe<Scalars['ID']>;
+    connect?: InputMaybe<Scalars['ID']['input']>;
     create?: InputMaybe<RecipeInput>;
 };
 
@@ -73,47 +75,47 @@ export type MutationCreateRecipeArgs = {
 };
 
 export type MutationDeleteMealArgs = {
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type MutationDeleteRecipeArgs = {
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type MutationPartialUpdateMealArgs = {
     data: PartialUpdateMealInput;
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type MutationPartialUpdateRecipeArgs = {
     data: PartialUpdateRecipeInput;
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type MutationUpdateMealArgs = {
     data: MealInput;
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type MutationUpdateRecipeArgs = {
     data: RecipeInput;
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type PartialUpdateMealInput = {
-    date?: InputMaybe<Scalars['Date']>;
-    notes?: InputMaybe<Scalars['String']>;
+    date?: InputMaybe<Scalars['Date']['input']>;
+    notes?: InputMaybe<Scalars['String']['input']>;
     recipe?: InputMaybe<MealRecipeRelation>;
     type?: InputMaybe<MealType>;
 };
 
 export type PartialUpdateRecipeInput = {
-    deleted?: InputMaybe<Scalars['Boolean']>;
+    deleted?: InputMaybe<Scalars['Boolean']['input']>;
     meals?: InputMaybe<RecipeMealsRelation>;
-    name?: InputMaybe<Scalars['String']>;
-    note?: InputMaybe<Scalars['String']>;
-    tags?: InputMaybe<Array<Scalars['String']>>;
-    url?: InputMaybe<Scalars['String']>;
+    name?: InputMaybe<Scalars['String']['input']>;
+    note?: InputMaybe<Scalars['String']['input']>;
+    tags?: InputMaybe<Array<Scalars['String']['input']>>;
+    url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type Query = {
@@ -127,86 +129,86 @@ export type Query = {
 };
 
 export type QueryAllMealsArgs = {
-    _cursor?: InputMaybe<Scalars['String']>;
-    _size?: InputMaybe<Scalars['Int']>;
+    _cursor?: InputMaybe<Scalars['String']['input']>;
+    _size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type QueryAllMealsInDateRangeArgs = {
-    _cursor?: InputMaybe<Scalars['String']>;
-    _size?: InputMaybe<Scalars['Int']>;
-    from: Scalars['Date'];
-    to: Scalars['Date'];
+    _cursor?: InputMaybe<Scalars['String']['input']>;
+    _size?: InputMaybe<Scalars['Int']['input']>;
+    from: Scalars['Date']['input'];
+    to: Scalars['Date']['input'];
 };
 
 export type QueryAllRecipesArgs = {
-    _cursor?: InputMaybe<Scalars['String']>;
-    _size?: InputMaybe<Scalars['Int']>;
+    _cursor?: InputMaybe<Scalars['String']['input']>;
+    _size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type QueryAllRecipesByDeletedFlagArgs = {
-    _cursor?: InputMaybe<Scalars['String']>;
-    _size?: InputMaybe<Scalars['Int']>;
-    deleted: Scalars['Boolean'];
+    _cursor?: InputMaybe<Scalars['String']['input']>;
+    _size?: InputMaybe<Scalars['Int']['input']>;
+    deleted: Scalars['Boolean']['input'];
 };
 
 export type QueryFindMealByIdArgs = {
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type QueryFindRecipeByIdArgs = {
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 };
 
 export type QueryAllMealsInDateRangePage = {
     __typename?: 'QueryAllMealsInDateRangePage';
-    after?: Maybe<Scalars['String']>;
-    before?: Maybe<Scalars['String']>;
+    after?: Maybe<Scalars['String']['output']>;
+    before?: Maybe<Scalars['String']['output']>;
     data: Array<Maybe<Meal>>;
 };
 
 export type Recipe = {
     __typename?: 'Recipe';
-    _id: Scalars['ID'];
-    _ts: Scalars['Long'];
-    deleted: Scalars['Boolean'];
+    _id: Scalars['ID']['output'];
+    _ts: Scalars['Long']['output'];
+    deleted: Scalars['Boolean']['output'];
     meals: MealPage;
-    name: Scalars['String'];
-    note?: Maybe<Scalars['String']>;
-    tags?: Maybe<Array<Scalars['String']>>;
-    url?: Maybe<Scalars['String']>;
+    name: Scalars['String']['output'];
+    note?: Maybe<Scalars['String']['output']>;
+    tags?: Maybe<Array<Scalars['String']['output']>>;
+    url?: Maybe<Scalars['String']['output']>;
 };
 
 export type RecipeMealsArgs = {
-    _cursor?: InputMaybe<Scalars['String']>;
-    _size?: InputMaybe<Scalars['Int']>;
+    _cursor?: InputMaybe<Scalars['String']['input']>;
+    _size?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type RecipeInput = {
-    deleted: Scalars['Boolean'];
+    deleted: Scalars['Boolean']['input'];
     meals?: InputMaybe<RecipeMealsRelation>;
-    name: Scalars['String'];
-    note?: InputMaybe<Scalars['String']>;
-    tags?: InputMaybe<Array<Scalars['String']>>;
-    url?: InputMaybe<Scalars['String']>;
+    name: Scalars['String']['input'];
+    note?: InputMaybe<Scalars['String']['input']>;
+    tags?: InputMaybe<Array<Scalars['String']['input']>>;
+    url?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type RecipeMealsRelation = {
-    connect?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+    connect?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
     create?: InputMaybe<Array<InputMaybe<MealInput>>>;
-    disconnect?: InputMaybe<Array<InputMaybe<Scalars['ID']>>>;
+    disconnect?: InputMaybe<Array<InputMaybe<Scalars['ID']['input']>>>;
 };
 
 export type RecipePage = {
     __typename?: 'RecipePage';
-    after?: Maybe<Scalars['String']>;
-    before?: Maybe<Scalars['String']>;
+    after?: Maybe<Scalars['String']['output']>;
+    before?: Maybe<Scalars['String']['output']>;
     data: Array<Maybe<Recipe>>;
 };
 
 export type GetMealsOfWeekQueryVariables = Exact<{
-    from: Scalars['Date'];
-    to: Scalars['Date'];
-    size: Scalars['Int'];
+    from: Scalars['Date']['input'];
+    to: Scalars['Date']['input'];
+    size: Scalars['Int']['input'];
 }>;
 
 export type GetMealsOfWeekQuery = {
@@ -245,22 +247,22 @@ export type GetAllRecipesQuery = {
 };
 
 export type CreateRecipeMutationVariables = Exact<{
-    name: Scalars['String'];
-    url?: InputMaybe<Scalars['String']>;
-    note?: InputMaybe<Scalars['String']>;
-    deleted: Scalars['Boolean'];
-    tags?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+    name: Scalars['String']['input'];
+    url?: InputMaybe<Scalars['String']['input']>;
+    note?: InputMaybe<Scalars['String']['input']>;
+    deleted: Scalars['Boolean']['input'];
+    tags?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 export type CreateRecipeMutation = { __typename?: 'Mutation'; createRecipe: { __typename?: 'Recipe'; _id: string } };
 
 export type UpdateRecipeMutationVariables = Exact<{
-    id: Scalars['ID'];
-    name: Scalars['String'];
-    url?: InputMaybe<Scalars['String']>;
-    note?: InputMaybe<Scalars['String']>;
-    deleted: Scalars['Boolean'];
-    tags?: InputMaybe<Array<Scalars['String']> | Scalars['String']>;
+    id: Scalars['ID']['input'];
+    name: Scalars['String']['input'];
+    url?: InputMaybe<Scalars['String']['input']>;
+    note?: InputMaybe<Scalars['String']['input']>;
+    deleted: Scalars['Boolean']['input'];
+    tags?: InputMaybe<Array<Scalars['String']['input']> | Scalars['String']['input']>;
 }>;
 
 export type UpdateRecipeMutation = {
@@ -269,26 +271,26 @@ export type UpdateRecipeMutation = {
 };
 
 export type CreateMealMutationVariables = Exact<{
-    date: Scalars['Date'];
+    date: Scalars['Date']['input'];
     type: MealType;
     recipe: MealRecipeRelation;
-    notes?: InputMaybe<Scalars['String']>;
+    notes?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type CreateMealMutation = { __typename?: 'Mutation'; createMeal: { __typename?: 'Meal'; _id: string } };
 
 export type UpdateMealMutationVariables = Exact<{
-    id: Scalars['ID'];
-    date: Scalars['Date'];
+    id: Scalars['ID']['input'];
+    date: Scalars['Date']['input'];
     type: MealType;
     recipe: MealRecipeRelation;
-    notes?: InputMaybe<Scalars['String']>;
+    notes?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 export type UpdateMealMutation = { __typename?: 'Mutation'; updateMeal?: { __typename?: 'Meal'; _ts: number } | null };
 
 export type DeleteMealMutationVariables = Exact<{
-    id: Scalars['ID'];
+    id: Scalars['ID']['input'];
 }>;
 
 export type DeleteMealMutation = { __typename?: 'Mutation'; deleteMeal?: { __typename?: 'Meal'; _id: string } | null };
