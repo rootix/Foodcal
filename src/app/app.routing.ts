@@ -1,15 +1,15 @@
 import { RouterModule, Routes } from '@angular/router';
 import { LoginViewComponent } from './core/views/login-view/login-view.component';
 import { SCHEDULE_ROUTES } from './schedule/schedule.routing';
-import { AuthGuard } from './shared/guards/auth.guard';
+import { authGuard } from './shared/guards/auth.guard';
 
 const routes: Routes = [
     { path: 'login', component: LoginViewComponent },
-    { path: 'schedule', children: SCHEDULE_ROUTES, canActivate: [AuthGuard] },
+    { path: 'schedule', children: SCHEDULE_ROUTES, canActivate: [authGuard] },
     {
         path: 'recipes',
         loadChildren: () => import('./recipes/recipes.module').then((m) => m.RecipesModule),
-        canActivate: [AuthGuard],
+        canActivate: [authGuard],
     },
     { path: '', redirectTo: 'schedule', pathMatch: 'full' },
 ];
