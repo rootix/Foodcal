@@ -34,7 +34,7 @@
                         ],
                         "styles": ["src/styles/main.less"],
                         "scripts": [],
-                        "allowedCommonJsDependencies": ["graphql-tag", "zen-observable"]
+                        "allowedCommonJsDependencies": ["cross-fetch", "websocket", "zen-observable"]
                     },
                     "configurations": {
                         "production": {
