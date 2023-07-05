@@ -17,8 +17,7 @@ import {
 } from './schedule.actions';
 import { getCurrentWeek, getWeekForDate } from '../utils/week-utils';
 import { MealsPerDay, Week } from '../models/schedule.model';
-import { Meal, MealType } from '../../api.generated';
-import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
+import { Meal, MealType } from '../../model';
 
 interface ScheduleStateModel {
     loading: boolean;
@@ -58,20 +57,16 @@ export class ScheduleState implements NgxsOnInit {
         const interval = eachDayOfInterval({ start: startDate, end: endDate });
         interval.forEach((date: Date) => {
             const lunch =
-                existingMeals.find(
-                    (m) => toDateFromApi(m.date).getTime() === date.getTime() && m.type === MealType.Lunch
-                ) ||
+                existingMeals.find((m) => m.date.getTime() === date.getTime() && m.type === MealType.Lunch) ||
                 ({
-                    date: toApiStringFromDate(date),
+                    date,
                     type: MealType.Lunch,
                 } as Meal);
 
             const dinner =
-                existingMeals.find(
-                    (m) => toDateFromApi(m.date).getTime() === date.getTime() && m.type === MealType.Dinner
-                ) ||
+                existingMeals.find((m) => m.date.getTime() === date.getTime() && m.type === MealType.Dinner) ||
                 ({
-                    date: toApiStringFromDate(date),
+                    date,
                     type: MealType.Dinner,
                 } as Meal);
 
@@ -95,11 +90,7 @@ export class ScheduleState implements NgxsOnInit {
     private createMeal(ctx: StateContext<ScheduleStateModel>, { meal }: CreateMeal) {
         return this.scheduleApiService
             .createMeal(meal)
-            .pipe(
-                tap((id) =>
-                    ctx.setState(patch({ mealsOfWeek: append([Object.assign({}, meal, { _id: id } as Meal)]) }))
-                )
-            );
+            .pipe(tap((m) => ctx.setState(patch({ mealsOfWeek: append([m]) }))));
     }
 
     @Action(UpdateMeal)
@@ -108,10 +99,7 @@ export class ScheduleState implements NgxsOnInit {
             tap((timestamp) =>
                 ctx.setState(
                     patch({
-                        mealsOfWeek: updateItem<Meal>(
-                            (m) => m?._id === meal._id,
-                            patch(Object.assign({}, meal, { _ts: timestamp } as Meal))
-                        ),
+                        mealsOfWeek: updateItem<Meal>((m) => m.id === meal.id, patch(Object.assign({}, meal))),
                     })
                 )
             )
@@ -123,7 +111,7 @@ export class ScheduleState implements NgxsOnInit {
         return this.scheduleApiService
             .deleteMeal(id)
             .pipe(
-                tap((deletedId) => ctx.setState(patch({ mealsOfWeek: removeItem<Meal>((m) => m?._id === deletedId) })))
+                tap((deletedId) => ctx.setState(patch({ mealsOfWeek: removeItem<Meal>((m) => m?.id === deletedId) })))
             );
     }
 

@@ -4,7 +4,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { CreateMeal, DeleteMeal, UpdateMeal } from '../../state/schedule.actions';
 import { MealDialogComponent } from '../meal-dialog/meal-dialog.component';
 import { MealsPerDay } from '../../models/schedule.model';
-import { Meal } from '../../../api.generated';
+import { Meal } from '../../../model';
 
 @Component({
     selector: 'fc-week-container',
@@ -35,7 +35,7 @@ export class WeekContainerComponent {
     }
 
     onDeleteMeal(meal: Meal) {
-        if (meal._id === undefined) {
+        if (!meal.id) {
             return;
         }
 
@@ -43,7 +43,7 @@ export class WeekContainerComponent {
             nzTitle: 'Bestätigen',
             nzContent: 'Soll das Menu wirklich gelöscht werden?',
             nzOkText: 'Löschen',
-            nzOnOk: () => this.store.dispatch(new DeleteMeal(meal._id)),
+            nzOnOk: () => this.store.dispatch(new DeleteMeal(meal.id)),
             nzCancelText: 'Abbrechen',
             nzOkDanger: true,
         });

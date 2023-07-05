@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RecipeState } from 'src/app/shared/state/recipe';
 import { NzTableComponent } from 'ng-zorro-antd/table';
-import { RecipeWithLastPreparation } from '../../../shared/models/recipe.model';
+import { Recipe } from '../../../model';
 
 @Component({
     selector: 'fc-recipes-list',
@@ -12,17 +12,17 @@ import { RecipeWithLastPreparation } from '../../../shared/models/recipe.model';
     styleUrls: ['./recipes-list.component.scss'],
 })
 export class RecipesListComponent {
-    @Input() recipes: RecipeWithLastPreparation[] = [];
+    @Input() recipes: Recipe[] = [];
     @Input() loading = false;
     @Output() createRecipe = new EventEmitter();
-    @Output() editRecipe = new EventEmitter<RecipeWithLastPreparation>();
-    @Output() deleteRecipe = new EventEmitter<RecipeWithLastPreparation>();
+    @Output() editRecipe = new EventEmitter<Recipe>();
+    @Output() deleteRecipe = new EventEmitter<Recipe>();
 
     @Select(RecipeState.getTags) private tagsFromStore$!: Observable<string[]>;
     tags$: Observable<{ text: string; value: string }[]>;
 
-    expandSet = new Set<string>();
-    @ViewChild(NzTableComponent) recipeTable?: NzTableComponent<RecipeWithLastPreparation>;
+    expandSet = new Set<number>();
+    @ViewChild(NzTableComponent) recipeTable?: NzTableComponent<Recipe>;
 
     constructor() {
         this.tags$ = this.tagsFromStore$.pipe(
@@ -31,23 +31,23 @@ export class RecipesListComponent {
         );
     }
 
-    sortByName(a: RecipeWithLastPreparation, b: RecipeWithLastPreparation) {
+    sortByName(a: Recipe, b: Recipe) {
         return a.name.localeCompare(b.name);
     }
 
-    sortByLastPreparation(a: RecipeWithLastPreparation, b: RecipeWithLastPreparation) {
-        if (!a.lastPreparation && !b.lastPreparation) {
+    sortByLastPreparation(a: Recipe, b: Recipe) {
+        if (!a.last_preparation && !b.last_preparation) {
             return 0;
-        } else if (!a.lastPreparation) {
+        } else if (!a.last_preparation) {
             return -1;
-        } else if (!b.lastPreparation) {
+        } else if (!b.last_preparation) {
             return 1;
         }
 
-        return a.lastPreparation > b.lastPreparation ? 1 : a.lastPreparation === b.lastPreparation ? 0 : -1;
+        return a.last_preparation > b.last_preparation ? 1 : a.last_preparation === b.last_preparation ? 0 : -1;
     }
 
-    filterByTags(tags: string[], recipe: RecipeWithLastPreparation) {
+    filterByTags(tags: string[], recipe: Recipe) {
         if (!recipe.tags) {
             return false;
         }
@@ -55,7 +55,7 @@ export class RecipesListComponent {
         return tags.some((tag) => (recipe.tags ? recipe.tags.indexOf(tag) !== -1 : false));
     }
 
-    onExpandChange(id: string, checked: boolean): void {
+    onExpandChange(id: number, checked: boolean): void {
         if (checked) {
             this.expandSet.add(id);
         } else {

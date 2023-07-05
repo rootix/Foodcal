@@ -25,8 +25,8 @@
             <tr>
                 <td
                     *ngIf="recipe.note"
-                    [nzExpand]="expandSet.has(recipe._id)"
-                    (nzExpandChange)="onExpandChange(recipe._id, $event)"
+                    [nzExpand]="expandSet.has(recipe.id!)"
+                    (nzExpandChange)="onExpandChange(recipe.id!, $event)"
                 ></td>
                 <td *ngIf="!recipe.note">&nbsp;</td>
                 <td>
@@ -35,7 +35,7 @@
                     </a>
                     <span *ngIf="!recipe.url">{{ recipe.name }}</span>
                 </td>
-                <td>{{ recipe.lastPreparation | date }}</td>
+                <td>{{ recipe.last_preparation | date }}</td>
                 <td>
                     <nz-tag *ngFor="let tag of recipe.tags">{{ tag }}</nz-tag>
                 </td>
@@ -48,7 +48,7 @@
                     </button>
                 </td>
             </tr>
-            <tr [nzExpand]="expandSet.has(recipe._id)">
+            <tr [nzExpand]="expandSet.has(recipe.id!)">
                 <span>{{ recipe.note }}</span>
             </tr>
         </ng-container>

@@ -1,92 +1,92 @@
 import { Injectable } from '@angular/core';
-import { isFuture, max, startOfDay } from 'date-fns';
 import { map } from 'rxjs/operators';
-import {
-    CreateRecipeGQL,
-    CreateRecipeMutationVariables,
-    GetAllRecipesGQL,
-    Recipe,
-    UpdateRecipeGQL,
-    UpdateRecipeMutationVariables,
-} from '../../api.generated';
-import { RecipeWithLastPreparation } from '../models/recipe.model';
-import { Observable } from 'rxjs';
+import { defer, from, Observable } from 'rxjs';
+import { SupabaseService } from './supabase.service';
+import { Recipe } from '../../model';
 import { toDateFromApi } from '../utils/date-utils';
 
 @Injectable({ providedIn: 'root' })
 export class RecipeApiService {
-    constructor(
-        private getAllRecipesQuery: GetAllRecipesGQL,
-        private createRecipeMutation: CreateRecipeGQL,
-        private updateRecipeMutation: UpdateRecipeGQL
-    ) {}
+    constructor(private supabaseService: SupabaseService) {}
 
-    getAllRecipes(): Observable<RecipeWithLastPreparation[]> {
-        const variables = {};
-        return this.getAllRecipesQuery.fetch(variables).pipe(
-            map((response) => response.data.allRecipesByDeletedFlag.data),
-            map((recipes) =>
-                recipes.map((recipe) =>
-                    recipe
-                        ? {
-                              _id: recipe._id,
-                              name: recipe.name,
-                              url: recipe.url,
-                              lastPreparation:
-                                  this.getNewestNonFutureDateFromGraphQlDates(
-                                      recipe.meals.data.reduce<Date[]>((dates, curr) => {
-                                          if (curr !== null) {
-                                              dates.push(toDateFromApi(curr.date));
-                                          }
-                                          return dates;
-                                      }, [])
-                                  ) ?? undefined,
-                              note: recipe.note,
-                              tags: recipe.tags,
-                              deleted: recipe.deleted,
-                          }
-                        : null
-                )
-            ),
-            map((recipes) => recipes.filter((r) => r != null) as RecipeWithLastPreparation[])
+    getAllRecipes(): Observable<Recipe[]> {
+        return defer(() =>
+            from(this.supabaseService.getClient().from('recipe_with_last_preparation').select('*')).pipe(
+                map((result) => {
+                    if (result.error) {
+                        throw result.error;
+                    }
+
+                    return result.data.map(
+                        (r) =>
+                            <Recipe>{
+                                id: r.id,
+                                name: r.name,
+                                note: r.note,
+                                url: r.url,
+                                tags: r.tags,
+                                last_preparation: r.last_preparation ? toDateFromApi(r.last_preparation) : null,
+                            }
+                    );
+                })
+            )
         );
     }
 
-    createRecipe(recipe: Recipe) {
-        const variables: CreateRecipeMutationVariables = {
-            name: recipe.name,
-            url: recipe.url,
-            note: recipe.note,
-            deleted: false,
-            tags: recipe.tags || [],
-        };
+    createRecipe(recipe: Recipe): Observable<Recipe> {
+        return defer(() =>
+            from(
+                this.supabaseService
+                    .getClient()
+                    .from('recipe')
+                    .insert({
+                        name: recipe.name,
+                        url: recipe.url,
+                        tags: recipe.tags,
+                        note: recipe.note,
+                    })
+                    .select()
+                    .single()
+            ).pipe(
+                map((result) => {
+                    if (result.error) {
+                        throw result.error;
+                    }
 
-        return this.createRecipeMutation.mutate(variables).pipe(map((response) => response.data?.createRecipe._id));
+                    return <Recipe>{
+                        id: result.data.id,
+                        name: result.data.name,
+                        note: result.data.note,
+                        url: result.data.url,
+                        tags: result.data.tags,
+                        deleted: result.data.deleted,
+                    };
+                })
+            )
+        );
     }
 
-    updateRecipe(recipe: Recipe) {
-        const variables: UpdateRecipeMutationVariables = {
-            id: recipe._id,
-            name: recipe.name,
-            url: recipe.url,
-            note: recipe.note,
-            deleted: recipe.deleted || false,
-            tags: recipe.tags || [],
-        };
-        return this.updateRecipeMutation.mutate(variables).pipe(map((response) => response.data?.updateRecipe?._ts));
-    }
-
-    private getNewestNonFutureDateFromGraphQlDates(dates: Date[]): Date | null {
-        if (dates == null || !dates.length) {
-            return null;
-        }
-
-        const parsedDates = dates.map((d) => startOfDay(d));
-        const datesNotInFuture = parsedDates.filter((d) => !isFuture(d));
-        if (!datesNotInFuture.length) {
-            return null;
-        }
-
-        return max(datesNotInFuture);
+    updateRecipe(recipe: Recipe): Observable<void> {
+        return defer(() =>
+            from(
+                this.supabaseService
+                    .getClient()
+                    .from('recipe')
+                    .update({
+                        name: recipe.name,
+                        note: recipe.note,
+                        url: recipe.url,
+                        tags: recipe.tags,
+                        deleted: recipe.deleted,
+                    })
+                    .eq('id', recipe.id)
+            ).pipe(
+                map((result) => {
+                    if (result.error) {
+                        throw result.error;
+                    }
+                })
+            )
+        );
     }
 }

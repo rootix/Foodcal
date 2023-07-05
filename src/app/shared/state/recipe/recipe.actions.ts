@@ -1,4 +1,4 @@
-import { Recipe } from '../../../api.generated';
+import { Recipe } from '../../../model';
 
 export class CreateRecipe {
     static readonly type = '[Recipe] Create Recipe';
@@ -13,6 +13,10 @@ export class UpdateRecipe {
 export class DeleteRecipe {
     static readonly type = '[Recipe] Delete Recipe';
     constructor(public recipe: Recipe) {}
+}
+
+export class LoadAllRecipes {
+    static readonly type = '[Recipe] Load All Recipes';
 }
 
 export class EnsureLoadAllRecipes {

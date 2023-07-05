@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Select, Store } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { EnsureLoadAllRecipes, RecipeState } from 'src/app/shared/state/recipe';
-import { Meal, Recipe } from '../../../api.generated';
+import { Meal, Recipe } from '../../../model';
 
 @Component({
     selector: 'fc-meal-dialog',
@@ -18,7 +18,7 @@ export class MealDialogComponent implements OnInit {
     isNew = false;
 
     readonly form = new UntypedFormGroup({
-        _id: new UntypedFormControl(0, Validators.required),
+        id: new UntypedFormControl(0, Validators.required),
         date: new UntypedFormControl(null, Validators.required),
         type: new UntypedFormControl(null, Validators.required),
         recipe: new UntypedFormControl(null, Validators.required),
@@ -37,12 +37,12 @@ export class MealDialogComponent implements OnInit {
 
     open(meal: Meal, submitHandler: (meal: Meal) => Observable<void>) {
         this.form.reset();
-        this.isNew = meal._id === undefined;
+        this.isNew = !meal.id;
         this.submitHandler = submitHandler;
-        this.form.patchValue(meal);
         if (this.isNew) {
-            this.form.patchValue({ _id: 0 });
+            this.form.patchValue({ id: 0 });
         }
+        this.form.patchValue(meal);
         this.isOpen = true;
     }
 
@@ -55,6 +55,7 @@ export class MealDialogComponent implements OnInit {
         }
 
         if (this.form.invalid) {
+            console.log(this.form.controls);
             return;
         }
 
@@ -67,6 +68,6 @@ export class MealDialogComponent implements OnInit {
     }
 
     recipeCompareFn(first: Recipe, second: Recipe) {
-        return first && second && first._id === second._id;
+        return first && second && first.id === second.id;
     }
 }

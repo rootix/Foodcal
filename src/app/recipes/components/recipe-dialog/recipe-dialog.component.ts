@@ -1,10 +1,10 @@
 import { Component } from '@angular/core';
-import { FormControl, FormGroup, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Select } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { RecipeState } from 'src/app/shared/state/recipe';
-import { Recipe } from '../../../api.generated';
+import { Recipe } from '../../../model';
 
 @Component({
     selector: 'fc-recipe-dialog',
@@ -17,7 +17,7 @@ export class RecipeDialogComponent {
     isNew = false;
 
     readonly form = new UntypedFormGroup({
-        _id: new UntypedFormControl(null, Validators.required),
+        id: new UntypedFormControl(null, Validators.required),
         name: new UntypedFormControl(null, Validators.required),
         url: new UntypedFormControl(),
         tags: new UntypedFormControl(),
@@ -29,11 +29,12 @@ export class RecipeDialogComponent {
 
     open(recipe: Recipe, submitHandler: (recipe: Recipe) => Observable<void>) {
         this.form.reset();
-        this.isNew = recipe._id === undefined;
+        this.isNew = !recipe.id;
         this.submitHandler = submitHandler;
-        this.form.patchValue({ _id: 0 });
         if (!this.isNew) {
             this.form.patchValue(recipe);
+        } else {
+            this.form.patchValue({ id: 0 });
         }
 
         this.isOpen = true;

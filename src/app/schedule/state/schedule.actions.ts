@@ -1,4 +1,4 @@
-import { Meal } from '../../api.generated';
+import { Meal } from '../../model';
 
 export class SwitchToNextWeek {
     static readonly type = '[Schedule] Switch To Next Week';
@@ -33,7 +33,7 @@ export class UpdateMeal {
 
 export class DeleteMeal {
     static readonly type = '[Schedule] Delete Meal';
-    constructor(public id: string) {}
+    constructor(public id: number) {}
 }
 
 export class EnsureInitializeSchedule {

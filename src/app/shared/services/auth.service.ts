@@ -1,21 +1,26 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { from } from 'rxjs';
+import { SupabaseService } from './supabase.service';
+import { Store } from '@ngxs/store';
+import { AuthChanged } from '../state/auth';
 
 @Injectable({
     providedIn: 'root',
 })
 export class AuthService {
-    constructor(private httpClient: HttpClient) {}
+    constructor(private subabaseService: SupabaseService, private store: Store) {}
 
-    login(username: string, password: string) {
-        return this.httpClient.post<string>('/.netlify/functions/login', JSON.stringify({ username, password }));
+    login(email: string, password: string) {
+        return from(this.subabaseService.getClient().auth.signInWithPassword({ email, password }));
     }
 
-    logout(token: string) {
-        return this.httpClient
-            .post<boolean>('/.netlify/functions/logout', JSON.stringify({ token }))
-            .pipe(catchError((_) => of(false)));
+    handleSession() {
+        this.subabaseService.getClient().auth.onAuthStateChange((_, session) => {
+            this.store.dispatch(new AuthChanged(session));
+        });
+    }
+
+    logout() {
+        return from(this.subabaseService.getClient().auth.signOut());
     }
 }

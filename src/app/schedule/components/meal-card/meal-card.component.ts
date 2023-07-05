@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Meal, MealType } from '../../../api.generated';
+import { Meal, MealType } from '../../../model';
 
 @Component({
     selector: 'fc-meal-card',
@@ -16,6 +16,6 @@ export class MealCardComponent {
     MealType = MealType;
 
     get isNew() {
-        return !this.meal || this.meal._id == null;
+        return !this.meal || !this.meal?.id;
     }
 }
