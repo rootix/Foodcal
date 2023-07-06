@@ -7,18 +7,18 @@ import {
     CreateRecipe,
     DeleteRecipe,
     EnsureLoadAllRecipes,
+    LoadAllRecipes,
     RecalculateTags,
     RecipeLoaded as RecipesLoaded,
     RecipeLoading as RecipesLoading,
     UpdateRecipe,
 } from './recipe.actions';
-import { Recipe } from '../../../api.generated';
-import { RecipeWithLastPreparation } from '../../models/recipe.model';
+import { Recipe } from '../../../model';
 
 interface RecipeStateModel {
     loaded: boolean;
     loading: boolean;
-    recipes: RecipeWithLastPreparation[];
+    recipes: Recipe[];
     tags: string[];
 }
 
@@ -53,9 +53,8 @@ export class RecipeState {
     @Action(CreateRecipe)
     private createRecipe(context: StateContext<RecipeStateModel>, { recipe }: CreateRecipe) {
         return this.recipeService.createRecipe(recipe).pipe(
-            map((id) => Object.assign({}, recipe, { _id: id } as Recipe)),
             tap((newRecipe) => {
-                context.setState(patch({ recipes: append([newRecipe]) }));
+                context.setState(patch({ recipes: append([Object.assign(newRecipe, { last_preparation: null })]) }));
             }),
             tap((_) => context.dispatch(new RecalculateTags()))
         );
@@ -67,10 +66,7 @@ export class RecipeState {
             tap((timestamp) =>
                 context.setState(
                     patch({
-                        recipes: updateItem<Recipe>(
-                            (r) => r?._id === recipe._id,
-                            patch(Object.assign({}, recipe, { _ts: timestamp } as Recipe))
-                        ),
+                        recipes: updateItem<Recipe>((r) => r.id === recipe.id, patch(Object.assign({}, recipe))),
                     })
                 )
             ),
@@ -81,8 +77,17 @@ export class RecipeState {
     @Action(DeleteRecipe)
     private deleteRecipe(context: StateContext<RecipeStateModel>, { recipe }: DeleteRecipe) {
         return this.recipeService.updateRecipe(Object.assign({}, recipe, { deleted: true })).pipe(
-            tap((_) => context.setState(patch({ recipes: removeItem<Recipe>((r) => r?._id === recipe._id) }))),
+            tap((_) => context.setState(patch({ recipes: removeItem<Recipe>((r) => r.id === recipe.id) }))),
             tap((_) => context.dispatch(new RecalculateTags()))
+        );
+    }
+
+    @Action(LoadAllRecipes)
+    private loadAllRecipes(context: StateContext<RecipeStateModel>) {
+        const state = context.getState();
+        return this.recipeService.getAllRecipes().pipe(
+            tap((recipes) => context.patchState({ loaded: true, recipes })),
+            tap((_) => context.dispatch([new RecipesLoaded(), new RecalculateTags()]))
         );
     }
 

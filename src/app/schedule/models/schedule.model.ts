@@ -1,4 +1,4 @@
-import { Meal } from '../../api.generated';
+import { Meal } from '../../model';
 
 export interface Week {
     calendarWeek: number;

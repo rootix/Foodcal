@@ -2,16 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import { NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
-import {
-    CreateRecipe,
-    DeleteRecipe,
-    EnsureLoadAllRecipes,
-    RecipeState,
-    UpdateRecipe,
-} from 'src/app/shared/state/recipe';
+import { CreateRecipe, DeleteRecipe, LoadAllRecipes, RecipeState, UpdateRecipe } from 'src/app/shared/state/recipe';
 import { RecipeDialogComponent } from '../../components/recipe-dialog/recipe-dialog.component';
-import { RecipeWithLastPreparation } from '../../../shared/models/recipe.model';
-import { Recipe } from '../../../api.generated';
+import { Recipe } from '../../../model';
 
 @Component({
     selector: 'fc-recipes-view',
@@ -20,13 +13,13 @@ import { Recipe } from '../../../api.generated';
 export class RecipesViewComponent implements OnInit {
     @ViewChild(RecipeDialogComponent) dialog?: RecipeDialogComponent;
 
-    @Select(RecipeState.getAllRecipes) recipes$!: Observable<RecipeWithLastPreparation[]>;
+    @Select(RecipeState.getAllRecipes) recipes$!: Observable<Recipe[]>;
     @Select(RecipeState.loading) loading$!: Observable<boolean>;
 
     constructor(private store: Store, private modalService: NzModalService) {}
 
     ngOnInit() {
-        this.store.dispatch(new EnsureLoadAllRecipes());
+        this.store.dispatch(new LoadAllRecipes());
     }
 
     onCreateRecipe() {

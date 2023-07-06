@@ -1,114 +1,110 @@
 import { Injectable } from '@angular/core';
-import { Apollo } from 'apollo-angular';
-import { differenceInCalendarDays } from 'date-fns';
 import { map } from 'rxjs/operators';
-import {
-    CreateMealGQL,
-    CreateMealMutationVariables,
-    DeleteMealGQL,
-    DeleteMealMutationVariables,
-    GetMealsOfWeekGQL,
-    Meal,
-    UpdateMealGQL,
-    UpdateMealMutationVariables,
-} from '../../api.generated';
-import { Observable } from 'rxjs';
+import { defer, from, Observable } from 'rxjs';
 import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
+import { SupabaseService } from '../../shared/services/supabase.service';
+import { Meal, Recipe } from '../../model';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ScheduleApiService {
-    constructor(
-        private apollo: Apollo,
-        private getMealsOfWeekGQL: GetMealsOfWeekGQL,
-        private createMealGQL: CreateMealGQL,
-        private updateMealGQL: UpdateMealGQL,
-        private deleteMealGQL: DeleteMealGQL
-    ) {}
+    constructor(private supabaseService: SupabaseService) {}
 
     getMealsOfWeek(startDate: Date, endDate: Date): Observable<Meal[]> {
-        const maxNumberOfMeals = (differenceInCalendarDays(endDate, startDate) + 1) * 2;
-        const variables = {
-            from: toApiStringFromDate(startDate),
-            to: toApiStringFromDate(endDate),
-            size: maxNumberOfMeals,
-        };
-
-        return this.getMealsOfWeekGQL.fetch(variables).pipe(
-            map((response) => response.data.allMealsInDateRange.data || []),
-            map((meals) =>
-                meals.filter((m) => m != null && toDateFromApi(m.date) >= startDate && toDateFromApi(m.date) <= endDate)
-            ),
-            map((graphQlMeals) =>
-                graphQlMeals.map((m) =>
-                    m != null
-                        ? ({
-                              _id: m._id,
-                              _ts: m._ts,
-                              type: m.type,
-                              notes: m.notes,
-                              date: m.date,
-                              recipe: m.recipe ? { _id: m.recipe._id, name: m.recipe.name, url: m.recipe.url } : null,
-                          } as Meal)
-                        : null
+        return defer(() =>
+            from(
+                this.supabaseService
+                    .getClient()
+                    .from('meal')
+                    .select(`*, recipe(id, name, url)`)
+                    .lte('date', toApiStringFromDate(endDate))
+                    .gte('date', toApiStringFromDate(startDate))
+            ).pipe(
+                map((result) => {
+                    if (result.error) {
+                        throw result.error;
+                    }
+                    return result.data;
+                }),
+                map((data) =>
+                    data.map(
+                        (m) =>
+                            <Meal>{
+                                id: m.id,
+                                date: toDateFromApi(m.date),
+                                type: m.type,
+                                notes: m.notes,
+                                recipe: <Recipe>{ id: m.recipe.id, name: m.recipe.name, url: m.recipe.url },
+                            }
+                    )
                 )
-            ),
-            map((meals) => meals.filter((m) => m != null) as Meal[])
+            )
         );
     }
 
     createMeal(meal: Meal) {
-        const variables: CreateMealMutationVariables = {
-            date: meal.date,
-            type: meal.type,
-            recipe: { connect: meal.recipe._id },
-            notes: meal.notes,
-        };
-        return this.createMealGQL.mutate(variables).pipe(
-            map((response) => {
-                if (!response.data) {
-                    throw Error('missing response');
-                }
+        return defer(() =>
+            from(
+                this.supabaseService
+                    .getClient()
+                    .from('meal')
+                    .insert({
+                        date: toApiStringFromDate(meal.date),
+                        type: meal.type,
+                        recipe: meal.recipe.id,
+                        notes: meal.notes,
+                    })
+                    .select(`*, recipe(id, name, url)`)
+                    .single()
+            ).pipe(
+                map((result) => {
+                    if (result.error) {
+                        throw result.error;
+                    }
 
-                return response.data.createMeal._id;
-            })
+                    return <Meal>{
+                        id: result.data.id,
+                        date: toDateFromApi(result.data.date),
+                        type: result.data.type,
+                        notes: result.data.notes,
+                        recipe: <Recipe>{
+                            id: result.data.recipe.id,
+                            name: result.data.recipe.name,
+                            url: result.data.recipe.url,
+                        },
+                    };
+                })
+            )
         );
     }
 
     updateMeal(meal: Meal) {
-        const variables: UpdateMealMutationVariables = {
-            id: meal._id,
-            date: meal.date,
-            type: meal.type,
-            recipe: { connect: meal.recipe._id },
-            notes: meal.notes,
-        };
-
-        return this.updateMealGQL.mutate(variables).pipe(
-            map((response) => {
-                if (!response.data?.updateMeal) {
-                    throw Error('missing response');
-                }
-
-                return response.data.updateMeal._ts;
-            })
+        return defer(() =>
+            from(
+                this.supabaseService
+                    .getClient()
+                    .from('meal')
+                    .update({
+                        date: toApiStringFromDate(meal.date),
+                        type: meal.type,
+                        notes: meal.notes,
+                        recipe: meal.recipe.id,
+                    })
+                    .eq('id', meal.id)
+            ).pipe(
+                map((result) => {
+                    if (result.error) {
+                        throw result.error;
+                    }
+                })
+            )
         );
     }
 
-    deleteMeal(id: string) {
-        const variables: DeleteMealMutationVariables = {
-            id,
-        };
-
-        return this.deleteMealGQL.mutate(variables).pipe(
-            map((response) => {
-                if (!response.data?.deleteMeal) {
-                    throw Error('missing response');
-                }
-
-                return response.data.deleteMeal._id;
-            })
+    deleteMeal(id: number) {
+        return defer(() =>
+            from(this.supabaseService.getClient().from('meal').delete().eq('id', id)).pipe(map((_) => id))
         );
     }
 }

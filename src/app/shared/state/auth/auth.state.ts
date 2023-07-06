@@ -1,50 +1,49 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
-import { Login, Logout } from './auth.actions';
+import { AuthChanged, Login, Logout } from './auth.actions';
+import { Session } from '@supabase/supabase-js';
+import { EMPTY } from 'rxjs';
 
 export interface AuthStateModel {
-    token: string | null;
+    user: Session | null;
 }
 
 @State<AuthStateModel>({
     name: 'auth',
     defaults: {
-        token: null,
+        user: null,
     },
 })
 @Injectable()
 export class AuthState {
-    @Selector()
-    static token(state: AuthStateModel): string | null {
-        return state.token;
-    }
-
+    constructor(private authService: AuthService) {}
     @Selector()
     static isAuthenticated(state: AuthStateModel) {
-        return !!state.token;
+        return !!state.user;
     }
 
     @Action(Login)
     login(ctx: StateContext<AuthStateModel>, action: Login) {
-        return this.authService.login(action.username, action.password).pipe(tap((token) => ctx.patchState({ token })));
+        return this.authService.login(action.email, action.password).pipe(
+            tap((result) => {
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+            }),
+            tap((result) => ctx.patchState({ user: result.data.session })),
+            map((_) => EMPTY)
+        );
+    }
+
+    @Action(AuthChanged)
+    authChanged(ctx: StateContext<AuthStateModel>, action: AuthChanged) {
+        ctx.patchState({ user: action.session });
     }
 
     @Action(Logout)
     logout(ctx: StateContext<AuthStateModel>) {
-        const { token } = ctx.getState();
-        if (token == null) {
-            return of(false);
-        }
-
-        return this.authService.logout(token).pipe(
-            tap((_) => {
-                ctx.patchState({ token: null });
-            })
-        );
+        this.authService.logout().pipe(tap((_) => ctx.setState({ user: null })));
     }
-
-    constructor(private authService: AuthService) {}
 }
