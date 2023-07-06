@@ -16,7 +16,10 @@ export class RecipesViewComponent implements OnInit {
     @Select(RecipeState.getAllRecipes) recipes$!: Observable<Recipe[]>;
     @Select(RecipeState.loading) loading$!: Observable<boolean>;
 
-    constructor(private store: Store, private modalService: NzModalService) {}
+    constructor(
+        private store: Store,
+        private modalService: NzModalService
+    ) {}
 
     ngOnInit() {
         this.store.dispatch(new LoadAllRecipes());

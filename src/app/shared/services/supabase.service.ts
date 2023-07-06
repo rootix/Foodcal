@@ -1,13 +1,11 @@
-import { AuthSession, AuthTokenResponse, createClient, SupabaseClient, User } from '@supabase/supabase-js';
+import { AuthTokenResponse, createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { Database } from '../../database.types';
-import { Data } from '@angular/router';
 
 @Injectable({ providedIn: 'root' })
 export class SupabaseService {
     private readonly supabase: SupabaseClient<Database>;
-    _session: AuthSession | null = null;
 
     constructor() {
         this.supabase = createClient<Database>(environment.supabaseUrl, environment.supabaseKey);

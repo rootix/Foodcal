@@ -9,8 +9,9 @@
                 "createDefaultProgram": true
             },
             "extends": [
-                "plugin:@angular-eslint/ng-cli-compat",
-                "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
+                "eslint:recommended",
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@angular-eslint/recommended",
                 "plugin:@angular-eslint/template/process-inline-templates",
                 "prettier"
             ],
@@ -50,12 +51,6 @@
                         }
                     }
                 ],
-                "@typescript-eslint/member-ordering": [
-                    "error",
-                    {
-                        "default": ["public-decorated-method", "field", "constructor", "method"]
-                    }
-                ],
                 "@typescript-eslint/naming-convention": [
                     "error",
                     {
@@ -74,7 +69,7 @@
                     "error",
                     {
                         "ignoreRegExpLiterals": false,
-                        "ignoreStrings": false,
+                        "ignoreStrings": true,
                         "ignorePattern": "^import|^export",
                         "code": 120
                     }
@@ -88,7 +83,13 @@
                 "space-before-function-paren": "off",
                 "space-in-parens": ["off", "never"],
                 "no-shadow": "off",
-                "@typescript-eslint/no-shadow": ["error"]
+                "@typescript-eslint/no-shadow": ["error"],
+                "@typescript-eslint/no-unused-vars": [
+                    "error",
+                    {
+                        "argsIgnorePattern": "_"
+                    }
+                ]
             }
         },
         {

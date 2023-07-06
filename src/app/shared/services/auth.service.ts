@@ -8,7 +8,10 @@ import { AuthChanged } from '../state/auth';
     providedIn: 'root',
 })
 export class AuthService {
-    constructor(private subabaseService: SupabaseService, private store: Store) {}
+    constructor(
+        private subabaseService: SupabaseService,
+        private store: Store
+    ) {}
 
     login(email: string, password: string) {
         return from(this.subabaseService.getClient().auth.signInWithPassword({ email, password }));
@@ -21,6 +24,6 @@ export class AuthService {
     }
 
     logout() {
-        return from(this.subabaseService.getClient().auth.signOut());
+        return from(this.subabaseService.logout());
     }
 }

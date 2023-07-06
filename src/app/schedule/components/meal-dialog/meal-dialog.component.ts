@@ -48,7 +48,7 @@ export class MealDialogComponent implements OnInit {
 
     onSubmit() {
         for (const i in this.form.controls) {
-            if (this.form.controls.hasOwnProperty(i)) {
+            if (Object.prototype.hasOwnProperty.call(this.form.controls, i)) {
                 this.form.controls[i].markAsDirty();
                 this.form.controls[i].updateValueAndValidity();
             }

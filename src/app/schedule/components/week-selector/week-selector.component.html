@@ -2,8 +2,8 @@
     <i nz-icon [nzType]="'left-circle'" nzTheme="twotone" nzTwotoneColor="#0072a3"></i>
 </button>
 <span [class.current]="week.isCurrentWeek">
-    <strong>KW {{ week.calendarWeek }}</strong> ({{ week.startDate | date : 'dd.MM.' }} –
-    {{ week.endDate | date : 'dd.MM.' }})</span
+    <strong>KW {{ week.calendarWeek }}</strong> ({{ week.startDate | date: 'dd.MM.' }} –
+    {{ week.endDate | date: 'dd.MM.' }})</span
 >
 <button nz-button nzType="text" (click)="switchToNextWeek.emit()">
     <i nz-icon [nzType]="'right-circle'" nzTheme="twotone" nzTwotoneColor="#0072a3"></i>
