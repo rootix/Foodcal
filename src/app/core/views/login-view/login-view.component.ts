@@ -1,9 +1,9 @@
-import { Component, DestroyRef } from "@angular/core";
+import { Component, DestroyRef } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Login } from 'src/app/shared/state/auth';
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
     selector: 'fc-login-view',
@@ -29,13 +29,16 @@ export class LoginViewComponent {
         }
 
         this.loading = true;
-        this.store.dispatch(new Login(this.form.controls.username.value, this.form.controls.password.value)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
-            (_) => this.router.navigate(['/schedule']),
-            (error) => {
-                this.loading = false;
-                this.loginFailed = error;
-            }
-        );
+        this.store
+            .dispatch(new Login(this.form.controls.username.value, this.form.controls.password.value))
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(
+                (_) => this.router.navigate(['/schedule']),
+                (error) => {
+                    this.loading = false;
+                    this.loginFailed = error;
+                }
+            );
     }
 
     onLoginFailedAlertClosed() {

@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { map, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
@@ -33,7 +33,7 @@ export class AuthState {
                 }
             }),
             tap((result) => ctx.patchState({ user: result.data.session })),
-            map(_ => EMPTY)
+            map((_) => EMPTY)
         );
     }
 
