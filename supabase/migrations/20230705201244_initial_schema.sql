@@ -57,8 +57,7 @@ on "public"."meal"
 as permissive
 for all
 to authenticated
-using (true)
-with check (true);
+using (true);
 
 
 create policy "Authenticated users only"
@@ -66,8 +65,7 @@ on "public"."recipe"
 as permissive
 for all
 to authenticated
-using (true)
-with check (true);
+using (true);
 
 
 
