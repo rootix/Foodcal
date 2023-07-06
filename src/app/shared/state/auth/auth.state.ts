@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
-import { tap } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
 import { AuthChanged, Login, Logout } from './auth.actions';
 import { Session } from '@supabase/supabase-js';
+import { EMPTY } from 'rxjs';
 
 export interface AuthStateModel {
     user: Session | null;
@@ -25,15 +26,14 @@ export class AuthState {
 
     @Action(Login)
     login(ctx: StateContext<AuthStateModel>, action: Login) {
-        this.authService.login(action.email, action.password).pipe(
-            tap((result) => console.log(result)),
-            tap((result) => ctx.patchState({ user: result.data.session }))
+        return this.authService.login(action.email, action.password).pipe(
+            tap((result) => ctx.patchState({ user: result.data.session })),
+            map((_) => EMPTY)
         );
     }
 
     @Action(AuthChanged)
     authChanged(ctx: StateContext<AuthStateModel>, action: AuthChanged) {
-        console.log('auth changed', action);
         ctx.patchState({ user: action.session });
     }
 

@@ -55,7 +55,6 @@ export class MealDialogComponent implements OnInit {
         }
 
         if (this.form.invalid) {
-            console.log(this.form.controls);
             return;
         }
 

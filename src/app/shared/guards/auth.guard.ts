@@ -1,11 +1,15 @@
 import { CanActivateFn, Router } from '@angular/router';
 import { inject } from '@angular/core';
-import { AuthState } from '../state/auth';
-import { Store } from '@ngxs/store';
+import { map } from 'rxjs/operators';
+import { SupabaseService } from '../services/supabase.service';
+import { from } from 'rxjs';
 
 export const authGuard: CanActivateFn = () => {
-    const store = inject(Store);
     const router = inject(Router);
-    const isAuthenticated = store.selectSnapshot(AuthState.isAuthenticated);
-    return isAuthenticated ? true : router.navigate(['/login']);
+    const supabaseService = inject(SupabaseService);
+
+    // This relies directly on the response from the Supabase service as the isAuthenticated selector of AuthState is behind in the guard timing.
+    return from(supabaseService.getClient().auth.getSession()).pipe(
+        map((result) => (result.data.session ? true : router.parseUrl('/login')))
+    );
 };
