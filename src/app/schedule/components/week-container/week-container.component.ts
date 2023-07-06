@@ -16,7 +16,10 @@ export class WeekContainerComponent {
     @ViewChild(MealDialogComponent) dialog?: MealDialogComponent;
     @HostBinding('class.loading') @Input() loading = false;
 
-    constructor(private store: Store, private modalService: NzModalService) {}
+    constructor(
+        private store: Store,
+        private modalService: NzModalService
+    ) {}
 
     onCreateMeal(meal: Meal) {
         if (!this.dialog) {

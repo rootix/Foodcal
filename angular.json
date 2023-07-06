@@ -34,7 +34,7 @@
                         ],
                         "styles": ["src/styles/main.less"],
                         "scripts": [],
-                        "allowedCommonJsDependencies": ["cross-fetch", "websocket", "zen-observable"]
+                        "allowedCommonJsDependencies": ["cross-fetch", "websocket", "zen-observable", "ws"]
                     },
                     "configurations": {
                         "production": {
@@ -49,6 +49,12 @@
                                     "type": "anyComponentStyle",
                                     "maximumWarning": "2kb",
                                     "maximumError": "4kb"
+                                }
+                            ],
+                            "fileReplacements": [
+                                {
+                                    "replace": "src/environments/environment.ts",
+                                    "with": "src/environments/environment.prod.ts"
                                 }
                             ]
                         },
@@ -67,14 +73,14 @@
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
                         "proxyConfig": "proxy.conf.json",
-                        "browserTarget": "Foodcal:build"
+                        "buildTarget": "Foodcal:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "Foodcal:build:production"
+                            "buildTarget": "Foodcal:build:production"
                         },
                         "development": {
-                            "browserTarget": "Foodcal:build:development"
+                            "buildTarget": "Foodcal:build:development"
                         }
                     },
                     "defaultConfiguration": "development"
@@ -82,19 +88,7 @@
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "Foodcal:build"
-                    }
-                },
-                "test": {
-                    "builder": "@angular-devkit/build-angular:karma",
-                    "options": {
-                        "main": "src/test.ts",
-                        "polyfills": "src/polyfills.ts",
-                        "tsConfig": "tsconfig.spec.json",
-                        "karmaConfig": "karma.conf.js",
-                        "assets": ["src/favicon.ico", "src/assets"],
-                        "styles": [],
-                        "scripts": []
+                        "buildTarget": "Foodcal:build"
                     }
                 },
                 "lint": {
@@ -107,7 +101,8 @@
         }
     },
     "cli": {
-        "analytics": false
+        "analytics": false,
+        "schematicCollections": ["@schematics/angular", "@angular-eslint/schematics"]
     },
     "schematics": {
         "@angular-eslint/schematics:application": {

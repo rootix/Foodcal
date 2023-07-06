@@ -19,6 +19,7 @@ export interface AuthStateModel {
 @Injectable()
 export class AuthState {
     constructor(private authService: AuthService) {}
+
     @Selector()
     static isAuthenticated(state: AuthStateModel) {
         return !!state.user;

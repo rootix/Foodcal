@@ -19,7 +19,11 @@ export class LoginViewComponent {
         password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     });
 
-    constructor(private store: Store, private router: Router, private destroyRef: DestroyRef) {}
+    constructor(
+        private store: Store,
+        private router: Router,
+        private destroyRef: DestroyRef
+    ) {}
 
     onLogin() {
         this.form.updateValueAndValidity();

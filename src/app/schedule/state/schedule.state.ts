@@ -96,7 +96,7 @@ export class ScheduleState implements NgxsOnInit {
     @Action(UpdateMeal)
     private updateMeal(ctx: StateContext<ScheduleStateModel>, { meal }: UpdateMeal) {
         return this.scheduleApiService.updateMeal(meal).pipe(
-            tap((timestamp) =>
+            tap((_) =>
                 ctx.setState(
                     patch({
                         mealsOfWeek: updateItem<Meal>((m) => m.id === meal.id, patch(Object.assign({}, meal))),

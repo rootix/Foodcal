@@ -18,7 +18,10 @@ export class WeekLoaded {
 
 export class LoadMealsOfWeek {
     static readonly type = '[Schedule] Load Meals Of Week';
-    constructor(public startDate: Date, public endDate: Date) {}
+    constructor(
+        public startDate: Date,
+        public endDate: Date
+    ) {}
 }
 
 export class CreateMeal {

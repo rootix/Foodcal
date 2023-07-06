@@ -2,7 +2,10 @@ import { Session } from '@supabase/supabase-js';
 
 export class Login {
     static readonly type = '[Auth] Login';
-    constructor(public email: string, public password: string) {}
+    constructor(
+        public email: string,
+        public password: string
+    ) {}
 }
 
 export class AuthChanged {

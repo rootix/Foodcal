@@ -37,7 +37,7 @@ export interface Database {
                         columns: ['recipe'];
                         referencedRelation: 'recipe_with_last_preparation';
                         referencedColumns: ['id'];
-                    }
+                    },
                 ];
             };
             recipe: {
