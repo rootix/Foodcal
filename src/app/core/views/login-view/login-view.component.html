@@ -2,10 +2,10 @@
     <nz-card nzTitle="Login">
         <nz-alert
             nzType="error"
-            [nzMessage]="'Login fehlgeschlagen.'"
+            [nzMessage]="loginFailed"
             [nzCloseable]="true"
             *ngIf="loginFailed"
-            (nzOnClose)="(onLoginFailedAlertClosed)"
+            (nzOnClose)="onLoginFailedAlertClosed()"
         >
         </nz-alert>
         <form nz-form [formGroup]="form" nzLayout="vertical" class="login-form" (ngSubmit)="onLogin()">

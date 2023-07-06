@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, DestroyRef } from "@angular/core";
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Login } from 'src/app/shared/state/auth';
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 
 @Component({
     selector: 'fc-login-view',
@@ -11,14 +12,14 @@ import { Login } from 'src/app/shared/state/auth';
 })
 export class LoginViewComponent {
     loading = false;
-    loginFailed = false;
+    loginFailed: false | string = false;
 
     readonly form = new FormGroup({
         username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
         password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     });
 
-    constructor(private store: Store, private router: Router) {}
+    constructor(private store: Store, private router: Router, private destroyRef: DestroyRef) {}
 
     onLogin() {
         this.form.updateValueAndValidity();
@@ -28,11 +29,11 @@ export class LoginViewComponent {
         }
 
         this.loading = true;
-        this.store.dispatch(new Login(this.form.controls.username.value, this.form.controls.password.value)).subscribe(
+        this.store.dispatch(new Login(this.form.controls.username.value, this.form.controls.password.value)).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(
             (_) => this.router.navigate(['/schedule']),
-            (_) => {
+            (error) => {
                 this.loading = false;
-                this.loginFailed = true;
+                this.loginFailed = error;
             }
         );
     }
