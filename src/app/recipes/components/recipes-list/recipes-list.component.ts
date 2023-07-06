@@ -22,7 +22,7 @@ export class RecipesListComponent {
     tags$: Observable<{ text: string; value: string }[]>;
 
     expandSet = new Set<number>();
-    @ViewChild(NzTableComponent) recipeTable?: NzTableComponent<Recipe>;
+    @ViewChild(NzTableComponent, { static: true}) recipeTable?: NzTableComponent<Recipe>;
 
     constructor() {
         this.tags$ = this.tagsFromStore$.pipe(
