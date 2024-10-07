@@ -1,5 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import de from '@angular/common/locales/de';
 import '@angular/common/locales/global/de-CH';
 import { LOCALE_ID, NgModule } from '@angular/core';
@@ -19,11 +19,8 @@ import { RecipeState } from './shared/state/recipe';
 
 registerLocaleData(de);
 
-@NgModule({
-    declarations: [AppComponent],
-    imports: [
-        BrowserModule,
-        HttpClientModule,
+@NgModule({ declarations: [AppComponent],
+    bootstrap: [AppComponent], imports: [BrowserModule,
         APP_ROUTES,
         BrowserAnimationsModule,
         CoreModule,
@@ -32,15 +29,12 @@ registerLocaleData(de);
             selectorOptions: { injectContainerState: false, suppressErrors: false },
         }),
         NgxsStoragePluginModule.forRoot({
-            key: 'auth.token',
+            keys: ['auth.token'],
         }),
         ScheduleModule,
-        NgxsReduxDevtoolsPluginModule.forRoot(),
-    ],
-    bootstrap: [AppComponent],
-    providers: [
+        NgxsReduxDevtoolsPluginModule.forRoot()], providers: [
         { provide: LOCALE_ID, useValue: 'de-CH' },
         { provide: NZ_I18N, useValue: de_DE },
-    ],
-})
+        provideHttpClient(withInterceptorsFromDi()),
+    ] })
 export class AppModule {}
