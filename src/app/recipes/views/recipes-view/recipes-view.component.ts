@@ -1,20 +1,24 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { Select, Store } from '@ngxs/store';
-import { NzModalService } from 'ng-zorro-antd/modal';
+import { Store } from '@ngxs/store';
+import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
 import { CreateRecipe, DeleteRecipe, LoadAllRecipes, RecipeState, UpdateRecipe } from 'src/app/shared/state/recipe';
 import { RecipeDialogComponent } from '../../components/recipe-dialog/recipe-dialog.component';
 import { Recipe } from '../../../model';
+import { RecipesListComponent } from '../../components/recipes-list/recipes-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
     selector: 'fc-recipes-view',
     templateUrl: './recipes-view.component.html',
+    standalone: true,
+    imports: [RecipesListComponent, RecipeDialogComponent, AsyncPipe, NzModalModule],
 })
 export class RecipesViewComponent implements OnInit {
     @ViewChild(RecipeDialogComponent) dialog?: RecipeDialogComponent;
 
-    @Select(RecipeState.getAllRecipes) recipes$!: Observable<Recipe[]>;
-    @Select(RecipeState.loading) loading$!: Observable<boolean>;
+    recipes$: Observable<Recipe[]> = this.store.select(RecipeState.getAllRecipes);
+    loading$: Observable<boolean> = this.store.select(RecipeState.loading);
 
     constructor(
         private store: Store,

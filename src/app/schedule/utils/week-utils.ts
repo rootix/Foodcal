@@ -8,6 +8,7 @@ export const getWeekForDate = (date: Date): Week => {
     const sunday = addDays(monday, 6);
     const calendarWeek = getCalendarWeek(date);
     const isCurrentWeek = getCalendarWeek(new Date()) === calendarWeek;
+
     return {
         startDate: monday,
         endDate: sunday,

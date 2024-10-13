@@ -1,15 +1,52 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { Select } from '@ngxs/store';
+import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RecipeState } from 'src/app/shared/state/recipe';
-import { NzTableComponent } from 'ng-zorro-antd/table';
+import {
+    NzTableCellDirective,
+    NzTableComponent,
+    NzTableFixedRowComponent,
+    NzTbodyComponent,
+    NzTdAddOnComponent,
+    NzThAddOnComponent,
+    NzTheadComponent,
+    NzThMeasureDirective,
+    NzTrDirective,
+    NzTrExpandDirective,
+} from 'ng-zorro-antd/table';
 import { Recipe } from '../../../model';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
+import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { NzTagComponent } from 'ng-zorro-antd/tag';
 
 @Component({
     selector: 'fc-recipes-list',
     templateUrl: './recipes-list.component.html',
     styleUrls: ['./recipes-list.component.scss'],
+    standalone: true,
+    imports: [
+        NzButtonComponent,
+        NzWaveDirective,
+        NzIconDirective,
+        NzTableComponent,
+        NzTheadComponent,
+        NzTrDirective,
+        NzTableCellDirective,
+        NzThMeasureDirective,
+        NzThAddOnComponent,
+        NzTbodyComponent,
+        NgFor,
+        NgIf,
+        NzTdAddOnComponent,
+        NzTagComponent,
+        NzTrExpandDirective,
+        NzTableFixedRowComponent,
+        AsyncPipe,
+        DatePipe,
+    ],
 })
 export class RecipesListComponent {
     @Input() recipes: Recipe[] = [];
@@ -18,18 +55,15 @@ export class RecipesListComponent {
     @Output() editRecipe = new EventEmitter<Recipe>();
     @Output() deleteRecipe = new EventEmitter<Recipe>();
 
-    @Select(RecipeState.getTags) private tagsFromStore$!: Observable<string[]>;
-    tags$: Observable<{ text: string; value: string }[]>;
+    tags$: Observable<{ text: string; value: string }[]> = this.store.select(RecipeState.getTags).pipe(
+        map((tags) => [...tags].sort()),
+        map((tags) => tags.map((tag) => ({ text: tag, value: tag })))
+    );
 
     expandSet = new Set<number>();
     @ViewChild(NzTableComponent, { static: true }) recipeTable?: NzTableComponent<Recipe>;
 
-    constructor() {
-        this.tags$ = this.tagsFromStore$.pipe(
-            map((tags) => [...tags].sort()),
-            map((tags) => tags.map((tag) => ({ text: tag, value: tag })))
-        );
-    }
+    constructor(private store: Store) {}
 
     sortByName(a: Recipe, b: Recipe) {
         return a.name.localeCompare(b.name);

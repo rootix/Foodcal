@@ -1,10 +1,15 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Meal, MealType } from '../../../model';
+import { NgIf } from '@angular/common';
+import { NzCardComponent } from 'ng-zorro-antd/card';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
 
 @Component({
     selector: 'fc-meal-card',
     templateUrl: './meal-card.component.html',
     styleUrls: ['./meal-card.component.scss'],
+    standalone: true,
+    imports: [NgIf, NzCardComponent, NzIconDirective],
 })
 export class MealCardComponent {
     @Input() meal?: Meal;

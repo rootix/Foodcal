@@ -1,14 +1,38 @@
 import { Component, DestroyRef } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Login } from 'src/app/shared/state/auth';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { NzCardComponent } from 'ng-zorro-antd/card';
+import { NgIf } from '@angular/common';
+import { NzAlertComponent } from 'ng-zorro-antd/alert';
+import { NzFormDirective, NzFormItemComponent, NzFormLabelComponent, NzFormControlComponent } from 'ng-zorro-antd/form';
+import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
+import { NzInputDirective } from 'ng-zorro-antd/input';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 
 @Component({
     selector: 'fc-login-view',
     templateUrl: './login-view.component.html',
     styleUrls: ['./login-view.component.scss'],
+    standalone: true,
+    imports: [
+        NzCardComponent,
+        NgIf,
+        NzAlertComponent,
+        ReactiveFormsModule,
+        NzFormDirective,
+        NzRowDirective,
+        NzFormItemComponent,
+        NzColDirective,
+        NzFormLabelComponent,
+        NzFormControlComponent,
+        NzInputDirective,
+        NzButtonComponent,
+        NzWaveDirective,
+    ],
 })
 export class LoginViewComponent {
     loading = false;

@@ -1,18 +1,47 @@
 import { Component, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { Select, Store } from '@ngxs/store';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { EnsureLoadAllRecipes, RecipeState } from 'src/app/shared/state/recipe';
 import { Meal, Recipe } from '../../../model';
+import { NzModalComponent } from 'ng-zorro-antd/modal';
+import { NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
+import { NzColDirective, NzRowDirective } from 'ng-zorro-antd/grid';
+import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
+import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { NzSpinComponent } from 'ng-zorro-antd/spin';
+import { NzInputDirective } from 'ng-zorro-antd/input';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 
 @Component({
     selector: 'fc-meal-dialog',
     templateUrl: './meal-dialog.component.html',
+    standalone: true,
+    imports: [
+        NzModalComponent,
+        ReactiveFormsModule,
+        NzFormDirective,
+        NzRowDirective,
+        NzFormItemComponent,
+        NzColDirective,
+        NzFormLabelComponent,
+        NzFormControlComponent,
+        NzSelectComponent,
+        NgFor,
+        NzOptionComponent,
+        NgIf,
+        NzSpinComponent,
+        NzInputDirective,
+        NzButtonComponent,
+        NzWaveDirective,
+        AsyncPipe,
+    ],
 })
 export class MealDialogComponent implements OnInit {
-    @Select(RecipeState.getAllRecipes) allRecipes$!: Observable<Recipe[]>;
-    @Select(RecipeState.loading) allRecipesLoading$!: Observable<boolean>;
+    allRecipes$: Observable<Recipe[]> = this.store.select(RecipeState.getAllRecipes);
+    allRecipesLoading$: Observable<boolean> = this.store.select(RecipeState.loading);
 
     isOpen = false;
     isNew = false;
