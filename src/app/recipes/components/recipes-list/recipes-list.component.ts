@@ -26,7 +26,6 @@ import { NzTagComponent } from 'ng-zorro-antd/tag';
     selector: 'fc-recipes-list',
     templateUrl: './recipes-list.component.html',
     styleUrls: ['./recipes-list.component.scss'],
-    standalone: true,
     imports: [
         NzButtonComponent,
         NzWaveDirective,

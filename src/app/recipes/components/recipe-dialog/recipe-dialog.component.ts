@@ -17,7 +17,6 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 @Component({
     selector: 'fc-recipe-dialog',
     templateUrl: './recipe-dialog.component.html',
-    standalone: true,
     imports: [
         NzModalComponent,
         ReactiveFormsModule,

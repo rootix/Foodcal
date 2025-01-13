@@ -13,7 +13,6 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
     selector: 'fc-shell',
     templateUrl: './shell.component.html',
     styleUrls: ['./shell.component.scss'],
-    standalone: true,
     imports: [
         NzLayoutComponent,
         NzSiderComponent,

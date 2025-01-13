@@ -12,7 +12,6 @@ import { ScheduleState } from '../../state/schedule.state';
 @Component({
     selector: 'fc-schedule-view',
     templateUrl: './schedule-view.component.html',
-    standalone: true,
     imports: [NzModalModule, WeekSelectorComponent, WeekContainerComponent, AsyncPipe],
 })
 export class ScheduleViewComponent implements OnInit {

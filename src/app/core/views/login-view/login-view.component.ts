@@ -17,7 +17,6 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
     selector: 'fc-login-view',
     templateUrl: './login-view.component.html',
     styleUrls: ['./login-view.component.scss'],
-    standalone: true,
     imports: [
         NzCardComponent,
         NgIf,

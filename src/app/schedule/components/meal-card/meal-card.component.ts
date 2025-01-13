@@ -8,7 +8,6 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
     selector: 'fc-meal-card',
     templateUrl: './meal-card.component.html',
     styleUrls: ['./meal-card.component.scss'],
-    standalone: true,
     imports: [NgIf, NzCardComponent, NzIconDirective],
 })
 export class MealCardComponent {

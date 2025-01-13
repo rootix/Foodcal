@@ -18,7 +18,6 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 @Component({
     selector: 'fc-meal-dialog',
     templateUrl: './meal-dialog.component.html',
-    standalone: true,
     imports: [
         NzModalComponent,
         ReactiveFormsModule,

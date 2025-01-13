@@ -9,7 +9,6 @@ import { DatePipe } from '@angular/common';
     selector: 'fc-week-selector',
     templateUrl: './week-selector.component.html',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: true,
     imports: [NzButtonComponent, NzIconDirective, DatePipe],
 })
 export class WeekSelectorComponent {

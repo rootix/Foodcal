@@ -7,7 +7,6 @@ import { DayNamePipe } from '../../../shared/pipes/day-name.pipe';
     selector: 'fc-day-container',
     templateUrl: './day-container.component.html',
     styleUrls: ['./day-container.component.scss'],
-    standalone: true,
     imports: [DatePipe, DayNamePipe],
 })
 export class DayContainerComponent {

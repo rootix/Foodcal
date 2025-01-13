@@ -14,7 +14,6 @@ import { MealCardComponent } from '../meal-card/meal-card.component';
     selector: 'fc-week-container',
     templateUrl: './week-container.component.html',
     styleUrls: ['./week-container.component.scss'],
-    standalone: true,
     imports: [NgIf, NzSpinComponent, NgFor, DayContainerComponent, MealCardComponent, MealDialogComponent],
 })
 export class WeekContainerComponent {

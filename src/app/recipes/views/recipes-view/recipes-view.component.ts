@@ -11,7 +11,6 @@ import { AsyncPipe } from '@angular/common';
 @Component({
     selector: 'fc-recipes-view',
     templateUrl: './recipes-view.component.html',
-    standalone: true,
     imports: [RecipesListComponent, RecipeDialogComponent, AsyncPipe, NzModalModule],
 })
 export class RecipesViewComponent implements OnInit {
