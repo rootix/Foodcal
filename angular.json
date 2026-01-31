@@ -21,7 +21,7 @@
                             "base": "dist/Foodcal"
                         },
                         "index": "src/index.html",
-                        "polyfills": ["zone.js", "@angular/localize/init"],
+                        "polyfills": ["@angular/localize/init"],
                         "tsConfig": "tsconfig.app.json",
                         "assets": [
                             "src/favicon.ico",
