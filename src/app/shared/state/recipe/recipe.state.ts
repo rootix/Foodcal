@@ -61,12 +61,12 @@ export class RecipeState {
     }
 
     @Action(UpdateRecipe)
-    private updateRecipe(context: StateContext<RecipeStateModel>, { recipe }: CreateRecipe) {
+    private updateRecipe(context: StateContext<RecipeStateModel>, { recipe }: UpdateRecipe) {
         return this.recipeService.updateRecipe(recipe).pipe(
             tap((_) =>
                 context.setState(
                     patch({
-                        recipes: updateItem<Recipe>((r) => r.id === recipe.id, patch(Object.assign({}, recipe))),
+                        recipes: updateItem<Recipe>((r) => r.id === recipe.id, patch({ ...recipe })),
                     })
                 )
             ),

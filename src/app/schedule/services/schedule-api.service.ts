@@ -3,7 +3,7 @@ import { map } from 'rxjs/operators';
 import { defer, from, Observable } from 'rxjs';
 import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
 import { SupabaseService } from '../../shared/services/supabase.service';
-import { Meal, Recipe } from '../../model';
+import { Meal, MealFormValue, Recipe } from '../../model';
 
 @Injectable({
     providedIn: 'root',
@@ -45,7 +45,7 @@ export class ScheduleApiService {
         );
     }
 
-    createMeal(meal: Meal) {
+    createMeal(meal: MealFormValue) {
         return defer(() =>
             from(
                 this.supabaseService
@@ -83,7 +83,7 @@ export class ScheduleApiService {
         );
     }
 
-    updateMeal(meal: Meal) {
+    updateMeal(meal: MealFormValue & { id: number }) {
         return defer(() =>
             from(
                 this.supabaseService

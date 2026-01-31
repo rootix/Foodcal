@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { defer, from, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { Recipe } from '../../model';
+import { Recipe, RecipeFormValue } from '../../model';
 import { toDateFromApi } from '../utils/date-utils';
 
 @Injectable({ providedIn: 'root' })
@@ -33,7 +33,7 @@ export class RecipeApiService {
         );
     }
 
-    createRecipe(recipe: Recipe): Observable<Recipe> {
+    createRecipe(recipe: RecipeFormValue): Observable<Recipe> {
         return defer(() =>
             from(
                 this.supabaseService
@@ -66,7 +66,7 @@ export class RecipeApiService {
         );
     }
 
-    updateRecipe(recipe: Recipe): Observable<void> {
+    updateRecipe(recipe: RecipeFormValue & { id: number; deleted?: boolean }): Observable<void> {
         return defer(() =>
             from(
                 this.supabaseService

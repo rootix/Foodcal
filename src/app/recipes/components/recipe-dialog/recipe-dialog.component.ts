@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { RecipeState } from 'src/app/shared/state/recipe';
-import { Recipe } from '../../../model';
+import { Recipe, RecipeFormValue } from '../../../model';
 import { NzModalComponent } from 'ng-zorro-antd/modal';
 import { NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
 import { NzColDirective, NzRowDirective } from 'ng-zorro-antd/grid';
@@ -42,45 +42,41 @@ export class RecipeDialogComponent {
     isOpen = false;
     isNew = false;
 
-    readonly form = new UntypedFormGroup({
-        id: new UntypedFormControl(null, Validators.required),
-        name: new UntypedFormControl(null, Validators.required),
-        url: new UntypedFormControl(),
-        tags: new UntypedFormControl(),
-        note: new UntypedFormControl(),
+    readonly form = new FormGroup({
+        id: new FormControl<number | null>(null),
+        name: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
+        url: new FormControl<string | null>(null),
+        tags: new FormControl<string[] | null>(null),
+        note: new FormControl<string | null>(null),
     });
 
     loading = false;
 
-    private submitHandler: (recipe: Recipe) => Observable<void> = (_) => EMPTY;
+    private submitHandler: (recipe: RecipeFormValue) => Observable<void> = (_) => EMPTY;
 
-    open(recipe: Recipe, submitHandler: (recipe: Recipe) => Observable<void>) {
+    open(recipe: Partial<Recipe>, submitHandler: (recipe: RecipeFormValue) => Observable<void>) {
         this.form.reset();
         this.isNew = !recipe.id;
         this.submitHandler = submitHandler;
-        if (!this.isNew) {
-            this.form.patchValue(recipe);
-        } else {
-            this.form.patchValue({ id: 0 });
-        }
-
+        this.form.patchValue({
+            id: recipe.id ?? null,
+            name: recipe.name ?? '',
+            url: recipe.url ?? null,
+            tags: recipe.tags ?? null,
+            note: recipe.note ?? null,
+        });
         this.isOpen = true;
     }
 
     onSubmit() {
-        for (const i in this.form.controls) {
-            if (Object.prototype.hasOwnProperty.call(this.form.controls, i)) {
-                this.form.controls[i].markAsDirty();
-                this.form.controls[i].updateValueAndValidity();
-            }
-        }
+        this.form.markAllAsTouched();
 
         if (this.form.invalid) {
             return;
         }
 
         this.loading = true;
-        this.submitHandler({ ...this.form.value })
+        this.submitHandler(this.form.getRawValue())
             .pipe(finalize(() => (this.loading = false)))
             .subscribe((_) => {
                 this.isOpen = false;

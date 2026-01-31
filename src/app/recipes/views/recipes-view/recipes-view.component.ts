@@ -4,7 +4,7 @@ import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
 import { CreateRecipe, DeleteRecipe, LoadAllRecipes, RecipeState, UpdateRecipe } from 'src/app/shared/state/recipe';
 import { RecipeDialogComponent } from '../../components/recipe-dialog/recipe-dialog.component';
-import { Recipe } from '../../../model';
+import { Recipe, RecipeFormValue } from '../../../model';
 import { RecipesListComponent } from '../../components/recipes-list/recipes-list.component';
 import { AsyncPipe } from '@angular/common';
 
@@ -39,7 +39,7 @@ export class RecipesViewComponent implements OnInit {
             throw Error('no dialog present');
         }
 
-        this.dialog.open(recipe, (r) => this.store.dispatch(new UpdateRecipe(r)));
+        this.dialog.open(recipe, (r) => this.store.dispatch(new UpdateRecipe(r as RecipeFormValue & { id: number })));
     }
 
     onDeleteRecipe(recipe: Recipe) {

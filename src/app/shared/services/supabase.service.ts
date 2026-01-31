@@ -8,7 +8,9 @@ export class SupabaseService {
     private readonly supabase: SupabaseClient<Database>;
 
     constructor() {
-        this.supabase = createClient<Database>(environment.supabaseUrl, environment.supabaseKey, { auth: { lock: (name, timeout, fn) => fn() }});
+        this.supabase = createClient<Database>(environment.supabaseUrl, environment.supabaseKey, {
+            auth: { lock: (name, timeout, fn) => fn() },
+        });
     }
 
     getClient() {

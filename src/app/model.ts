@@ -20,3 +20,7 @@ export interface Meal {
     recipe?: Recipe;
     type: MealType;
 }
+
+// Form value types - id is optional for create operations
+export type RecipeFormValue = Omit<Recipe, 'id' | 'deleted' | 'last_preparation'> & { id: number | null };
+export type MealFormValue = Omit<Meal, 'id'> & { id: number | null };

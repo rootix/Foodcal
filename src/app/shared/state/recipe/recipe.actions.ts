@@ -1,13 +1,13 @@
-import { Recipe } from '../../../model';
+import { Recipe, RecipeFormValue } from '../../../model';
 
 export class CreateRecipe {
     static readonly type = '[Recipe] Create Recipe';
-    constructor(public recipe: Recipe) {}
+    constructor(public recipe: RecipeFormValue) {}
 }
 
 export class UpdateRecipe {
     static readonly type = '[Recipe] Update Recipe';
-    constructor(public recipe: Recipe) {}
+    constructor(public recipe: RecipeFormValue & { id: number }) {}
 }
 
 export class DeleteRecipe {

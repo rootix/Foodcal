@@ -4,7 +4,7 @@ import { NzModalService } from 'ng-zorro-antd/modal';
 import { CreateMeal, DeleteMeal, UpdateMeal } from '../../state/schedule.actions';
 import { MealDialogComponent } from '../meal-dialog/meal-dialog.component';
 import { MealsPerDay } from '../../models/schedule.model';
-import { Meal } from '../../../model';
+import { Meal, MealFormValue } from '../../../model';
 
 import { NzSpinComponent } from 'ng-zorro-antd/spin';
 import { DayContainerComponent } from '../day-container/day-container.component';
@@ -37,7 +37,7 @@ export class WeekContainerComponent {
             throw Error('no dialog present');
         }
 
-        this.dialog.open(meal, (m) => this.store.dispatch(new UpdateMeal(m)));
+        this.dialog.open(meal, (m) => this.store.dispatch(new UpdateMeal(m as MealFormValue & { id: number })));
     }
 
     onDeleteMeal(meal: Meal) {

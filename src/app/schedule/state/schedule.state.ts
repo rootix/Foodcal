@@ -99,7 +99,7 @@ export class ScheduleState implements NgxsOnInit {
             tap((_) =>
                 ctx.setState(
                     patch({
-                        mealsOfWeek: updateItem<Meal>((m) => m.id === meal.id, patch(Object.assign({}, meal))),
+                        mealsOfWeek: updateItem<Meal>((m) => m.id === meal.id, patch({ ...meal })),
                     })
                 )
             )
