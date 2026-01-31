@@ -1,6 +1,7 @@
 import { Meal } from '../../model';
 
 export interface Week {
+    year: number;
     calendarWeek: number;
     isCurrentWeek: boolean;
     startDate: Date;

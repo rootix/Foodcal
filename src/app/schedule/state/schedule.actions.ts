@@ -1,13 +1,5 @@
 import { MealFormValue } from '../../model';
 
-export class SwitchToNextWeek {
-    static readonly type = '[Schedule] Switch To Next Week';
-}
-
-export class SwitchToPreviousWeek {
-    static readonly type = '[Schedule] Switch To Previous Week';
-}
-
 export class WeekLoading {
     static readonly type = '[Schedule] Week Loading';
 }
@@ -41,4 +33,12 @@ export class DeleteMeal {
 
 export class EnsureInitializeSchedule {
     static readonly type = '[Schedule] Ensure Initialize Schedule';
+}
+
+export class NavigateToWeek {
+    static readonly type = '[Schedule] Navigate To Week';
+    constructor(
+        public year: number,
+        public week: number
+    ) {}
 }

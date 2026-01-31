@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
 import { append, patch, removeItem, updateItem } from '@ngxs/store/operators';
-import { addDays, eachDayOfInterval } from 'date-fns';
+import { eachDayOfInterval } from 'date-fns';
 import { mergeMap, switchMap, tap } from 'rxjs/operators';
 import { ScheduleApiService } from '../services/schedule-api.service';
 import {
@@ -9,13 +9,12 @@ import {
     DeleteMeal,
     EnsureInitializeSchedule,
     LoadMealsOfWeek,
-    SwitchToNextWeek,
-    SwitchToPreviousWeek,
+    NavigateToWeek,
     UpdateMeal,
     WeekLoaded,
     WeekLoading,
 } from './schedule.actions';
-import { getCurrentWeek, getWeekForDate } from '../utils/week-utils';
+import { getCurrentWeek, getWeekByYearAndWeek } from '../utils/week-utils';
 import { MealsPerDay, Week } from '../models/schedule.model';
 import { Meal, MealType } from '../../model';
 
@@ -125,22 +124,11 @@ export class ScheduleState implements NgxsOnInit {
         return ctx.dispatch(new LoadMealsOfWeek(currentState.week.startDate, currentState.week.endDate));
     }
 
-    @Action(SwitchToNextWeek)
-    private switchToNextWeek(ctx: StateContext<ScheduleStateModel>) {
-        const currentStartDate = ctx.getState().week.startDate;
-        const nextWeekStartDate = addDays(currentStartDate, 7);
-        const nextWeek = getWeekForDate(nextWeekStartDate);
-        ctx.patchState({ week: nextWeek });
-        return ctx.dispatch(new LoadMealsOfWeek(nextWeek.startDate, nextWeek.endDate));
-    }
-
-    @Action(SwitchToPreviousWeek)
-    private switchToPreviousWeek(ctx: StateContext<ScheduleStateModel>) {
-        const currentStartDate = ctx.getState().week.startDate;
-        const previousWeekStartDate = addDays(currentStartDate, -7);
-        const previousWeek = getWeekForDate(previousWeekStartDate);
-        ctx.patchState({ week: previousWeek });
-        return ctx.dispatch(new LoadMealsOfWeek(previousWeek.startDate, previousWeek.endDate));
+    @Action(NavigateToWeek)
+    private navigateToWeek(ctx: StateContext<ScheduleStateModel>, { year, week }: NavigateToWeek) {
+        const targetWeek = getWeekByYearAndWeek(year, week);
+        ctx.patchState({ week: targetWeek });
+        return ctx.dispatch(new LoadMealsOfWeek(targetWeek.startDate, targetWeek.endDate));
     }
 
     @Action(LoadMealsOfWeek)
