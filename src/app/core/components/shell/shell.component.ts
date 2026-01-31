@@ -1,4 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
+import { BreakpointObserver } from '@angular/cdk/layout';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
@@ -31,15 +32,27 @@ export class ShellComponent implements OnInit {
     private actions$ = inject(Actions);
     private authService = inject(AuthService);
     private router = inject(Router);
+    private breakpointObserver = inject(BreakpointObserver);
 
     isAuthenticated$: Observable<boolean> = this.store.select(AuthState.isAuthenticated);
+    siderCollapsed = false;
+    private isMobile = false;
 
     ngOnInit() {
         this.authService.handleSession();
         this.actions$.pipe(ofActionSuccessful(Logout)).subscribe((_) => this.router.navigate(['/login']));
+        this.breakpointObserver.observe('(max-width: 991px)').subscribe((result) => {
+            this.isMobile = result.matches;
+        });
     }
 
     onLogout() {
         this.store.dispatch(new Logout());
+    }
+
+    closeSliderIfMobile() {
+        if (this.isMobile) {
+            this.siderCollapsed = true;
+        }
     }
 }

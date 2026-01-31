@@ -1,5 +1,5 @@
 <nz-layout>
-    <nz-sider nzCollapsible nzBreakpoint="lg" [nzCollapsedWidth]="0">
+    <nz-sider nzCollapsible nzBreakpoint="lg" [nzCollapsedWidth]="0" [(nzCollapsed)]="siderCollapsed">
         <div class="logo">
             <a [routerLink]="'/'">
                 <span class="title"><strong>Food</strong>cal</span>
@@ -7,23 +7,17 @@
         </div>
         @if (isAuthenticated$ | async) {
             <ul nz-menu nzTheme="dark" nzMode="inline">
-                @if (isAuthenticated$ | async) {
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/schedule">Wochenplan</a>
-                    </li>
-                }
-                @if (isAuthenticated$ | async) {
-                    <li nz-menu-item nzMatchRouter>
-                        <a routerLink="/recipes"><span class="nav-text">Rezepte</span> </a>
-                    </li>
-                }
-                @if (isAuthenticated$ | async) {
-                    <li nz-menu-item style="margin-top: 4rem">
-                        <a href="javascript:void(0);" (click)="onLogout()" class="nav-link nav-icon">
-                            <i nz-icon nzType="logout" style="color: #fff"></i> Logout
-                        </a>
-                    </li>
-                }
+                <li nz-menu-item nzMatchRouter>
+                    <a routerLink="/schedule" (click)="closeSliderIfMobile()">Wochenplan</a>
+                </li>
+                <li nz-menu-item nzMatchRouter>
+                    <a routerLink="/recipes" (click)="closeSliderIfMobile()">Rezepte</a>
+                </li>
+                <li nz-menu-item style="margin-top: 4rem">
+                    <a href="javascript:void(0);" (click)="onLogout(); closeSliderIfMobile()">
+                        <i nz-icon nzType="logout" style="color: #fff"></i> Logout
+                    </a>
+                </li>
             </ul>
         }
     </nz-sider>
