@@ -22,7 +22,7 @@
                         [compareWith]="recipeCompareFn"
                     >
                         @for (item of allRecipes$ | async; track item) {
-                            <nz-option [nzLabel]="item.name" [nzValue]="item"></nz-option>
+                            <nz-option [nzLabel]="formatRecipeLabel(item)" [nzValue]="item"></nz-option>
                         }
                     </nz-select>
                     <ng-template #renderTemplate>

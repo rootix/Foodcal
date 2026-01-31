@@ -2,14 +2,14 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { map, finalize } from 'rxjs/operators';
 import { EnsureLoadAllRecipes, RecipeState } from 'src/app/shared/state/recipe';
 import { Meal, MealFormValue, MealType, Recipe } from '../../../model';
 import { NzModalComponent } from 'ng-zorro-antd/modal';
 import { NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
 import { NzColDirective, NzRowDirective } from 'ng-zorro-antd/grid';
 import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { NzSpinComponent } from 'ng-zorro-antd/spin';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -35,11 +35,15 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
         NzWaveDirective,
         AsyncPipe,
     ],
+    providers: [DatePipe],
 })
 export class MealDialogComponent implements OnInit {
     private store = inject(Store);
+    private datePipe = inject(DatePipe);
 
-    allRecipes$: Observable<Recipe[]> = this.store.select(RecipeState.getAllRecipes);
+    allRecipes$: Observable<Recipe[]> = this.store
+        .select(RecipeState.getAllRecipes)
+        .pipe(map((recipes) => [...recipes].sort((a, b) => a.name.localeCompare(b.name))));
     allRecipesLoading$: Observable<boolean> = this.store.select(RecipeState.loading);
 
     isOpen = false;
@@ -93,5 +97,12 @@ export class MealDialogComponent implements OnInit {
 
     recipeCompareFn(first: Recipe, second: Recipe) {
         return first && second && first.id === second.id;
+    }
+
+    formatRecipeLabel(recipe: Recipe): string {
+        if (recipe.last_preparation) {
+            return `${recipe.name} (${this.datePipe.transform(recipe.last_preparation, 'dd.MM.yyyy')})`;
+        }
+        return recipe.name;
     }
 }
