@@ -26,3 +26,10 @@
         margin-left: 0;
     }
 }
+
+// Workaround for iOS / iPadOS 26 dropdown positioning issue
+// https://github.com/NG-ZORRO/ng-zorro-antd/issues/9401#issuecomment-3349945989
+.ant-select-dropdown,
+.ant-dropdown {
+    position: initial !important;
+}
