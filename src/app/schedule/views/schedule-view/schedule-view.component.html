@@ -1,4 +1,9 @@
-<h1 class="page-title">Wochenplan</h1>
+<div class="page-header">
+    <h1 class="page-title">Wochenplan</h1>
+    <button nz-button nzType="default" nzShape="circle" nzSize="small" (click)="onReload()" [nzLoading]="(loading$ | async)!">
+        <nz-icon nzType="reload" />
+    </button>
+</div>
 
 <fc-week-selector
     [week]="(week$ | async)!"

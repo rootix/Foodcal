@@ -9,13 +9,16 @@ import { WeekSelectorComponent } from '../../components/week-selector/week-selec
 import { WeekContainerComponent } from '../../components/week-container/week-container.component';
 import { AsyncPipe } from '@angular/common';
 import { NzModalModule } from 'ng-zorro-antd/modal';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { ScheduleState } from '../../state/schedule.state';
 import { getCurrentWeek, getWeekByYearAndWeek } from '../../utils/week-utils';
 
 @Component({
     selector: 'fc-schedule-view',
     templateUrl: './schedule-view.component.html',
-    imports: [NzModalModule, WeekSelectorComponent, WeekContainerComponent, AsyncPipe],
+    styleUrl: './schedule-view.component.scss',
+    imports: [NzModalModule, WeekSelectorComponent, WeekContainerComponent, AsyncPipe, NzButtonComponent, NzIconDirective],
 })
 export class ScheduleViewComponent implements OnInit {
     private store = inject(Store);
@@ -58,5 +61,10 @@ export class ScheduleViewComponent implements OnInit {
         const week = this.store.selectSnapshot(ScheduleState.week);
         const previousWeek = getWeekByYearAndWeek(week.year, week.calendarWeek - 1);
         this.router.navigate(['/schedule', previousWeek.year, previousWeek.calendarWeek]);
+    }
+
+    onReload() {
+        const week = this.store.selectSnapshot(ScheduleState.week);
+        this.store.dispatch(new NavigateToWeek(week.year, week.calendarWeek));
     }
 }
