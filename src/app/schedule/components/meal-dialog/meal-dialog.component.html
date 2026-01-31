@@ -21,7 +21,7 @@
                         [nzDropdownRender]="renderTemplate"
                         [compareWith]="recipeCompareFn"
                     >
-                        @for (item of allRecipes$ | async; track item) {
+                        @for (item of allRecipes$ | async; track item.id) {
                             <nz-option [nzLabel]="formatRecipeLabel(item)" [nzValue]="item"></nz-option>
                         }
                     </nz-select>

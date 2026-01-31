@@ -1,9 +1,9 @@
 @if (loading) {
     <nz-spin nzSimple class="loading-indicator"></nz-spin>
 }
-@for (day of mealsOfWeek; track day) {
+@for (day of mealsOfWeek; track day.date.getDay()) {
     <fc-day-container [date]="day.date">
-        @for (meal of day.meals; track meal) {
+        @for (meal of day.meals; track meal.type) {
             <fc-meal-card
                 [meal]="meal"
                 (createMeal)="onCreateMeal($event)"

@@ -21,7 +21,7 @@
         </tr>
     </thead>
     <tbody>
-        @for (recipe of recipeTable?.data || []; track recipe) {
+        @for (recipe of recipeTable?.data || []; track recipe.id) {
             <tr>
                 @if (recipe.note) {
                     <td
@@ -44,7 +44,7 @@
                 </td>
                 <td>{{ recipe.last_preparation | date }}</td>
                 <td>
-                    @for (tag of recipe.tags; track tag) {
+                    @for (tag of recipe.tags; track $index) {
                         <nz-tag>{{ tag }}</nz-tag>
                     }
                 </td>
