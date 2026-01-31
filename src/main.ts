@@ -1,4 +1,4 @@
-import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
+import { enableProdMode, LOCALE_ID, provideZoneChangeDetection } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { de_DE, NZ_I18N } from 'ng-zorro-antd/i18n';
@@ -34,5 +34,6 @@ bootstrapApplication(AppComponent, {
         provideHttpClient(withInterceptorsFromDi()),
         provideAnimations(),
         { provide: NZ_I18N, useValue: de_DE },
+        { provide: LOCALE_ID, useValue: 'de-CH' },
     ],
 }).catch((err) => console.error(err));
