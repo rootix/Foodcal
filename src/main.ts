@@ -1,8 +1,8 @@
 import { enableProdMode, LOCALE_ID, provideZonelessChangeDetection } from '@angular/core';
 
 import { environment } from './environments/environment';
-import { de_DE, NZ_I18N } from 'ng-zorro-antd/i18n';
-import localeDeCh from '@angular/common/locales/de-CH';
+import { de_DE, NZ_DATE_CONFIG, NZ_I18N } from 'ng-zorro-antd/i18n';
+import localeDe from '@angular/common/locales/de';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -20,7 +20,8 @@ if (environment.production) {
     enableProdMode();
 }
 
-registerLocaleData(localeDeCh, 'de-CH');
+registerLocaleData(localeDe);
+
 bootstrapApplication(AppComponent, {
     providers: [
         provideZonelessChangeDetection(),
@@ -34,6 +35,7 @@ bootstrapApplication(AppComponent, {
         provideHttpClient(withInterceptorsFromDi()),
         provideAnimations(),
         { provide: NZ_I18N, useValue: de_DE },
+        { provide: NZ_DATE_CONFIG, useValue: { firstDayOfWeek: 1 } },
         { provide: LOCALE_ID, useValue: 'de-CH' },
     ],
 }).catch((err) => console.error(err));

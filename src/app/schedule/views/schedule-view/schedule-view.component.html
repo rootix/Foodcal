@@ -1,6 +1,13 @@
 <div class="page-header">
     <h1 class="page-title">Wochenplan</h1>
-    <button nz-button nzType="default" nzShape="circle" nzSize="small" (click)="onReload()" [nzLoading]="(loading$ | async)!">
+    <button
+        nz-button
+        nzType="default"
+        nzShape="circle"
+        nzSize="small"
+        (click)="onReload()"
+        [nzLoading]="(loading$ | async)!"
+    >
         <nz-icon nzType="reload" />
     </button>
 </div>
@@ -9,6 +16,7 @@
     [week]="(week$ | async)!"
     (switchToNextWeek)="onSwitchToNextWeek()"
     (switchToPreviousWeek)="onSwitchToPreviousWeek()"
+    (switchToWeek)="onSwitchToWeek($event)"
 ></fc-week-selector>
 
 <fc-week-container [mealsOfWeek]="(mealsOfWeek$ | async)!" [loading]="(loading$ | async)!"></fc-week-container>

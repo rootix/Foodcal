@@ -12,13 +12,20 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
 import { ScheduleState } from '../../state/schedule.state';
-import { getCurrentWeek, getWeekByYearAndWeek } from '../../utils/week-utils';
+import { getCalendarWeek, getCurrentWeek, getWeekByYearAndWeek } from '../../utils/week-utils';
 
 @Component({
     selector: 'fc-schedule-view',
     templateUrl: './schedule-view.component.html',
     styleUrl: './schedule-view.component.scss',
-    imports: [NzModalModule, WeekSelectorComponent, WeekContainerComponent, AsyncPipe, NzButtonComponent, NzIconDirective],
+    imports: [
+        NzModalModule,
+        WeekSelectorComponent,
+        WeekContainerComponent,
+        AsyncPipe,
+        NzButtonComponent,
+        NzIconDirective,
+    ],
 })
 export class ScheduleViewComponent implements OnInit {
     private store = inject(Store);
@@ -66,5 +73,10 @@ export class ScheduleViewComponent implements OnInit {
     onReload() {
         const week = this.store.selectSnapshot(ScheduleState.week);
         this.store.dispatch(new NavigateToWeek(week.year, week.calendarWeek));
+    }
+
+    onSwitchToWeek(date: Date) {
+        const week = getWeekByYearAndWeek(date.getFullYear(), getCalendarWeek(date));
+        this.router.navigate(['/schedule', week.year, week.calendarWeek]);
     }
 }
