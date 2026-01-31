@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { from } from 'rxjs';
 import { SupabaseService } from './supabase.service';
 import { Store } from '@ngxs/store';
@@ -8,10 +8,8 @@ import { AuthChanged } from '../state/auth';
     providedIn: 'root',
 })
 export class AuthService {
-    constructor(
-        private subabaseService: SupabaseService,
-        private store: Store
-    ) {}
+    private subabaseService = inject(SupabaseService);
+    private store = inject(Store);
 
     login(email: string, password: string) {
         return from(this.subabaseService.getClient().auth.signInWithPassword({ email, password }));

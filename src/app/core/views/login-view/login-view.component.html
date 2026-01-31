@@ -1,13 +1,14 @@
 <div class="login-form-container">
     <nz-card nzTitle="Login">
-        <nz-alert
-            nzType="error"
-            [nzMessage]="loginFailed"
-            [nzCloseable]="true"
-            *ngIf="loginFailed"
-            (nzOnClose)="onLoginFailedAlertClosed()"
-        >
-        </nz-alert>
+        @if (loginFailed) {
+            <nz-alert
+                nzType="error"
+                [nzMessage]="loginFailed"
+                [nzCloseable]="true"
+                (nzOnClose)="onLoginFailedAlertClosed()"
+            >
+            </nz-alert>
+        }
         <form nz-form [formGroup]="form" nzLayout="vertical" class="login-form" (ngSubmit)="onLogin()">
             <nz-form-item>
                 <nz-form-label nzFor="username" nzRequired> Benutzername </nz-form-label>

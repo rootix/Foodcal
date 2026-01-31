@@ -17,6 +17,6 @@ export interface Meal {
     id: number;
     date: Date;
     notes: string | null;
-    recipe: Recipe;
+    recipe?: Recipe;
     type: MealType;
 }

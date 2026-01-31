@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
@@ -10,7 +10,7 @@ import { NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLab
 import { NzColDirective, NzRowDirective } from 'ng-zorro-antd/grid';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
-import { AsyncPipe, NgFor } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 
@@ -28,7 +28,6 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
         NzFormControlComponent,
         NzInputDirective,
         NzSelectComponent,
-        NgFor,
         NzOptionComponent,
         NzButtonComponent,
         NzWaveDirective,
@@ -36,6 +35,8 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
     ],
 })
 export class RecipeDialogComponent {
+    private store = inject(Store);
+
     tags$: Observable<string[]> = this.store.select(RecipeState.getTags);
 
     isOpen = false;
@@ -50,8 +51,6 @@ export class RecipeDialogComponent {
     });
 
     loading = false;
-
-    constructor(private store: Store) {}
 
     private submitHandler: (recipe: Recipe) => Observable<void> = (_) => EMPTY;
 

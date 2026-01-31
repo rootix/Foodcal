@@ -21,23 +21,32 @@
         </tr>
     </thead>
     <tbody>
-        <ng-container *ngFor="let recipe of recipeTable?.data || []">
+        @for (recipe of recipeTable?.data || []; track recipe) {
             <tr>
-                <td
-                    *ngIf="recipe.note"
-                    [nzExpand]="expandSet.has(recipe.id!)"
-                    (nzExpandChange)="onExpandChange(recipe.id!, $event)"
-                ></td>
-                <td *ngIf="!recipe.note">&nbsp;</td>
+                @if (recipe.note) {
+                    <td
+                        [nzExpand]="expandSet.has(recipe.id!)"
+                        (nzExpandChange)="onExpandChange(recipe.id!, $event)"
+                    ></td>
+                }
+                @if (!recipe.note) {
+                    <td>&nbsp;</td>
+                }
                 <td>
-                    <a *ngIf="recipe.url" href="{{ recipe.url }}" target="_blank">
-                        {{ recipe.name }}
-                    </a>
-                    <span *ngIf="!recipe.url">{{ recipe.name }}</span>
+                    @if (recipe.url) {
+                        <a href="{{ recipe.url }}" target="_blank">
+                            {{ recipe.name }}
+                        </a>
+                    }
+                    @if (!recipe.url) {
+                        <span>{{ recipe.name }}</span>
+                    }
                 </td>
                 <td>{{ recipe.last_preparation | date }}</td>
                 <td>
-                    <nz-tag *ngFor="let tag of recipe.tags">{{ tag }}</nz-tag>
+                    @for (tag of recipe.tags; track tag) {
+                        <nz-tag>{{ tag }}</nz-tag>
+                    }
                 </td>
                 <td>
                     <button nz-button nzType="text" (click)="editRecipe.emit(recipe)">
@@ -51,6 +60,6 @@
             <tr [nzExpand]="expandSet.has(recipe.id!)">
                 <span>{{ recipe.note }}</span>
             </tr>
-        </ng-container>
+        }
     </tbody>
 </nz-table>

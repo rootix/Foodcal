@@ -21,14 +21,14 @@
                         [nzDropdownRender]="renderTemplate"
                         [compareWith]="recipeCompareFn"
                     >
-                        <nz-option
-                            *ngFor="let item of allRecipes$ | async"
-                            [nzLabel]="item.name"
-                            [nzValue]="item"
-                        ></nz-option>
+                        @for (item of allRecipes$ | async; track item) {
+                            <nz-option [nzLabel]="item.name" [nzValue]="item"></nz-option>
+                        }
                     </nz-select>
                     <ng-template #renderTemplate>
-                        <nz-spin *ngIf="allRecipesLoading$ | async"></nz-spin>
+                        @if (allRecipesLoading$ | async) {
+                            <nz-spin></nz-spin>
+                        }
                     </ng-template>
                 </nz-form-control>
             </nz-form-item>

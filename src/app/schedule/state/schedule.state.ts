@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Action, NgxsOnInit, Selector, State, StateContext } from '@ngxs/store';
 import { append, patch, removeItem, updateItem } from '@ngxs/store/operators';
 import { addDays, eachDayOfInterval } from 'date-fns';
@@ -35,6 +35,8 @@ interface ScheduleStateModel {
 })
 @Injectable()
 export class ScheduleState implements NgxsOnInit {
+    private scheduleApiService = inject(ScheduleApiService);
+
     @Selector()
     static week(state: ScheduleStateModel) {
         return state.week;
@@ -49,8 +51,6 @@ export class ScheduleState implements NgxsOnInit {
     static loading(state: ScheduleStateModel) {
         return state.loading;
     }
-
-    constructor(private scheduleApiService: ScheduleApiService) {}
 
     private static buildCompleteMealsOfWeek(startDate: Date, endDate: Date, existingMeals: Meal[]) {
         const mealsPerDay: MealsPerDay[] = [];

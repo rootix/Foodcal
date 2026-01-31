@@ -1,4 +1,4 @@
-import { enableProdMode } from '@angular/core';
+import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 
 import { environment } from './environments/environment';
 import { de_DE, NZ_I18N } from 'ng-zorro-antd/i18n';
@@ -23,6 +23,7 @@ if (environment.production) {
 registerLocaleData(localeDeCh, 'de-CH');
 bootstrapApplication(AppComponent, {
     providers: [
+        provideZoneChangeDetection(),
         provideRouter(routes),
         provideStore(
             [AuthState, RecipeState],

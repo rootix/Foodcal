@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { append, patch, removeItem, updateItem } from '@ngxs/store/operators';
 import { tap } from 'rxjs/operators';
@@ -33,6 +33,8 @@ interface RecipeStateModel {
 })
 @Injectable()
 export class RecipeState {
+    private recipeService = inject(RecipeApiService);
+
     @Selector()
     static getAllRecipes(state: RecipeStateModel) {
         return state.recipes;
@@ -47,8 +49,6 @@ export class RecipeState {
     static loading({ loading }: RecipeStateModel) {
         return loading;
     }
-
-    constructor(private recipeService: RecipeApiService) {}
 
     @Action(CreateRecipe)
     private createRecipe(context: StateContext<RecipeStateModel>, { recipe }: CreateRecipe) {

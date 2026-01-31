@@ -1,12 +1,17 @@
-<nz-spin nzSimple *ngIf="loading" class="loading-indicator"></nz-spin>
-<fc-day-container *ngFor="let day of mealsOfWeek" [date]="day.date">
-    <fc-meal-card
-        *ngFor="let meal of day.meals"
-        [meal]="meal"
-        (createMeal)="onCreateMeal($event)"
-        (editMeal)="onEditMeal($event)"
-        (deleteMeal)="onDeleteMeal($event)"
-    ></fc-meal-card>
-</fc-day-container>
+@if (loading) {
+    <nz-spin nzSimple class="loading-indicator"></nz-spin>
+}
+@for (day of mealsOfWeek; track day) {
+    <fc-day-container [date]="day.date">
+        @for (meal of day.meals; track meal) {
+            <fc-meal-card
+                [meal]="meal"
+                (createMeal)="onCreateMeal($event)"
+                (editMeal)="onEditMeal($event)"
+                (deleteMeal)="onDeleteMeal($event)"
+            ></fc-meal-card>
+        }
+    </fc-day-container>
+}
 
 <fc-meal-dialog></fc-meal-dialog>

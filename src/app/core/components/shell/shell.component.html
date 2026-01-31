@@ -5,19 +5,27 @@
                 <span class="title"><strong>Food</strong>cal</span>
             </a>
         </div>
-        <ul nz-menu nzTheme="dark" nzMode="inline" *ngIf="isAuthenticated$ | async">
-            <li *ngIf="isAuthenticated$ | async" nz-menu-item nzMatchRouter>
-                <a routerLink="/schedule">Wochenplan</a>
-            </li>
-            <li *ngIf="isAuthenticated$ | async" nz-menu-item nzMatchRouter>
-                <a routerLink="/recipes"><span class="nav-text">Rezepte</span> </a>
-            </li>
-            <li *ngIf="isAuthenticated$ | async" nz-menu-item style="margin-top: 4rem">
-                <a href="javascript:void(0);" (click)="onLogout()" class="nav-link nav-icon">
-                    <i nz-icon nzType="logout" style="color: #fff"></i> Logout
-                </a>
-            </li>
-        </ul>
+        @if (isAuthenticated$ | async) {
+            <ul nz-menu nzTheme="dark" nzMode="inline">
+                @if (isAuthenticated$ | async) {
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/schedule">Wochenplan</a>
+                    </li>
+                }
+                @if (isAuthenticated$ | async) {
+                    <li nz-menu-item nzMatchRouter>
+                        <a routerLink="/recipes"><span class="nav-text">Rezepte</span> </a>
+                    </li>
+                }
+                @if (isAuthenticated$ | async) {
+                    <li nz-menu-item style="margin-top: 4rem">
+                        <a href="javascript:void(0);" (click)="onLogout()" class="nav-link nav-icon">
+                            <i nz-icon nzType="logout" style="color: #fff"></i> Logout
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
     </nz-sider>
     <nz-layout>
         <nz-content>

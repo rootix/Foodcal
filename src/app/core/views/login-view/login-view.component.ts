@@ -1,11 +1,11 @@
-import { Component, DestroyRef } from '@angular/core';
+import { Component, DestroyRef, inject } from '@angular/core';
 import { FormControl, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Store } from '@ngxs/store';
 import { Login } from 'src/app/shared/state/auth';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NzCardComponent } from 'ng-zorro-antd/card';
-import { NgIf } from '@angular/common';
+
 import { NzAlertComponent } from 'ng-zorro-antd/alert';
 import { NzFormDirective, NzFormItemComponent, NzFormLabelComponent, NzFormControlComponent } from 'ng-zorro-antd/form';
 import { NzRowDirective, NzColDirective } from 'ng-zorro-antd/grid';
@@ -19,7 +19,6 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
     styleUrls: ['./login-view.component.scss'],
     imports: [
         NzCardComponent,
-        NgIf,
         NzAlertComponent,
         ReactiveFormsModule,
         NzFormDirective,
@@ -34,6 +33,10 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
     ],
 })
 export class LoginViewComponent {
+    private store = inject(Store);
+    private router = inject(Router);
+    private destroyRef = inject(DestroyRef);
+
     loading = false;
     loginFailed: false | string = false;
 
@@ -41,12 +44,6 @@ export class LoginViewComponent {
         username: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
         password: new FormControl<string>('', { nonNullable: true, validators: [Validators.required] }),
     });
-
-    constructor(
-        private store: Store,
-        private router: Router,
-        private destroyRef: DestroyRef
-    ) {}
 
     onLogin() {
         this.form.updateValueAndValidity();
