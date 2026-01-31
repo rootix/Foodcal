@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Actions, ofActionSuccessful, Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { AuthState, Logout } from 'src/app/shared/state/auth';
 import { AuthService } from '../../../shared/services/auth.service';
 import { NzContentComponent, NzFooterComponent, NzLayoutComponent, NzSiderComponent } from 'ng-zorro-antd/layout';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { NzMenuDirective, NzMenuItemComponent } from 'ng-zorro-antd/menu';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
 
@@ -17,7 +17,6 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
         NzLayoutComponent,
         NzSiderComponent,
         RouterLink,
-        NgIf,
         NzMenuDirective,
         NzMenuItemComponent,
         NzIconDirective,
@@ -28,14 +27,12 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
     ],
 })
 export class ShellComponent implements OnInit {
-    isAuthenticated$: Observable<boolean> = this.store.select(AuthState.isAuthenticated);
+    private store = inject(Store);
+    private actions$ = inject(Actions);
+    private authService = inject(AuthService);
+    private router = inject(Router);
 
-    constructor(
-        private store: Store,
-        private actions$: Actions,
-        private authService: AuthService,
-        private router: Router
-    ) {}
+    isAuthenticated$: Observable<boolean> = this.store.select(AuthState.isAuthenticated);
 
     ngOnInit() {
         this.authService.handleSession();

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Action, Selector, State, StateContext } from '@ngxs/store';
 import { map, tap } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service';
@@ -18,7 +18,7 @@ export interface AuthStateModel {
 })
 @Injectable()
 export class AuthState {
-    constructor(private authService: AuthService) {}
+    private authService = inject(AuthService);
 
     @Selector()
     static isAuthenticated(state: AuthStateModel) {

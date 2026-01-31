@@ -27,7 +27,9 @@
                 <nz-form-label [nzSpan]="6" nzFor="tags"> Tags </nz-form-label>
                 <nz-form-control [nzSpan]="18">
                     <nz-select nzId="tags" nzMode="tags" formControlName="tags">
-                        <nz-option *ngFor="let item of tags$ | async" [nzLabel]="item" [nzValue]="item"></nz-option>
+                        @for (item of tags$ | async; track item) {
+                            <nz-option [nzLabel]="item" [nzValue]="item"></nz-option>
+                        }
                     </nz-select>
                 </nz-form-control>
             </nz-form-item>

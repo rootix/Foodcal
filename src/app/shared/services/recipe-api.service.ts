@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { defer, from, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
@@ -7,7 +7,7 @@ import { toDateFromApi } from '../utils/date-utils';
 
 @Injectable({ providedIn: 'root' })
 export class RecipeApiService {
-    constructor(private supabaseService: SupabaseService) {}
+    private supabaseService = inject(SupabaseService);
 
     getAllRecipes(): Observable<Recipe[]> {
         return defer(() =>

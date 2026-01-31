@@ -1,39 +1,48 @@
-<nz-card *ngIf="meal" [class.empty]="isNew" [nzActions]="isNew ? [add] : [edit, delete]">
-    <div class="card-block">
-        <span class="card-tag">{{ meal.type === MealType.Lunch ? 'Mittag' : 'Abend' }}</span>
-        <h3 class="card-title">
-            <span *ngIf="!meal.recipe">Kein Menü definiert</span>
-            <a *ngIf="meal.recipe?.url" href="{{ meal.recipe.url }}" target="_blank">
-                {{ meal.recipe.name }}
-            </a>
-            <span *ngIf="meal.recipe && !meal.recipe.url">{{ meal.recipe.name }}</span>
-        </h3>
-        <p class="card-text" *ngIf="meal.notes">
-            {{ meal.notes }}
-        </p>
-    </div>
-
-    <ng-template #add>
-        <i nz-icon nzType="plus" title="Menu hinzufügen" (click)="createMeal.emit(meal)"></i>
-    </ng-template>
-    <ng-template #edit>
-        <i
-            nz-icon
-            nzType="edit"
-            nzTheme="twotone"
-            nzTwotoneColor="#0072a3"
-            title="Menu bearbeiten"
-            (click)="editMeal.emit(meal)"
-        ></i>
-    </ng-template>
-    <ng-template #delete>
-        <i
-            nz-icon
-            nzType="delete"
-            nzTheme="twotone"
-            nzTwotoneColor="#f00"
-            title="Menu löschen"
-            (click)="deleteMeal.emit(meal)"
-        ></i>
-    </ng-template>
-</nz-card>
+@if (meal) {
+    <nz-card [class.empty]="isNew" [nzActions]="isNew ? [add] : [edit, delete]">
+        <div class="card-block">
+            <span class="card-tag">{{ meal.type === MealType.Lunch ? 'Mittag' : 'Abend' }}</span>
+            <h3 class="card-title">
+                @if (!meal.recipe) {
+                    <span>Kein Menü definiert</span>
+                }
+                @if (meal.recipe?.url) {
+                    <a href="{{ meal.recipe.url }}" target="_blank">
+                        {{ meal.recipe.name }}
+                    </a>
+                }
+                @if (meal.recipe && !meal.recipe.url) {
+                    <span>{{ meal.recipe.name }}</span>
+                }
+            </h3>
+            @if (meal.notes) {
+                <p class="card-text">
+                    {{ meal.notes }}
+                </p>
+            }
+        </div>
+        <ng-template #add>
+            <i nz-icon nzType="plus" title="Menu hinzufügen" (click)="createMeal.emit(meal)"></i>
+        </ng-template>
+        <ng-template #edit>
+            <i
+                nz-icon
+                nzType="edit"
+                nzTheme="twotone"
+                nzTwotoneColor="#0072a3"
+                title="Menu bearbeiten"
+                (click)="editMeal.emit(meal)"
+            ></i>
+        </ng-template>
+        <ng-template #delete>
+            <i
+                nz-icon
+                nzType="delete"
+                nzTheme="twotone"
+                nzTwotoneColor="#f00"
+                title="Menu löschen"
+                (click)="deleteMeal.emit(meal)"
+            ></i>
+        </ng-template>
+    </nz-card>
+}

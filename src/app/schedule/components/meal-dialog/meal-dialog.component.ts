@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { EMPTY, Observable } from 'rxjs';
@@ -9,7 +9,7 @@ import { NzModalComponent } from 'ng-zorro-antd/modal';
 import { NzFormControlComponent, NzFormDirective, NzFormItemComponent, NzFormLabelComponent } from 'ng-zorro-antd/form';
 import { NzColDirective, NzRowDirective } from 'ng-zorro-antd/grid';
 import { NzOptionComponent, NzSelectComponent } from 'ng-zorro-antd/select';
-import { AsyncPipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { NzSpinComponent } from 'ng-zorro-antd/spin';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
@@ -28,9 +28,7 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
         NzFormLabelComponent,
         NzFormControlComponent,
         NzSelectComponent,
-        NgFor,
         NzOptionComponent,
-        NgIf,
         NzSpinComponent,
         NzInputDirective,
         NzButtonComponent,
@@ -39,6 +37,8 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
     ],
 })
 export class MealDialogComponent implements OnInit {
+    private store = inject(Store);
+
     allRecipes$: Observable<Recipe[]> = this.store.select(RecipeState.getAllRecipes);
     allRecipesLoading$: Observable<boolean> = this.store.select(RecipeState.loading);
 
@@ -54,8 +54,6 @@ export class MealDialogComponent implements OnInit {
     });
 
     submitLoading = false;
-
-    constructor(private store: Store) {}
 
     private submitHandler: (meal: Meal) => Observable<void> = (_) => EMPTY;
 

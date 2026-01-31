@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { MealsPerDay, Week } from '../../models/schedule.model';
@@ -15,11 +15,11 @@ import { ScheduleState } from '../../state/schedule.state';
     imports: [NzModalModule, WeekSelectorComponent, WeekContainerComponent, AsyncPipe],
 })
 export class ScheduleViewComponent implements OnInit {
+    private store = inject(Store);
+
     week$: Observable<Week> = this.store.select(ScheduleState.week);
     mealsOfWeek$: Observable<MealsPerDay[]> = this.store.select(ScheduleState.mealsOfWeek);
     loading$: Observable<boolean> = this.store.select(ScheduleState.loading);
-
-    constructor(private store: Store) {}
 
     ngOnInit() {
         this.store.dispatch(new EnsureInitializeSchedule());

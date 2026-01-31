@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, inject } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -19,7 +19,7 @@ import { Recipe } from '../../../model';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
-import { AsyncPipe, DatePipe, NgFor, NgIf } from '@angular/common';
+import { AsyncPipe, DatePipe } from '@angular/common';
 import { NzTagComponent } from 'ng-zorro-antd/tag';
 
 @Component({
@@ -37,8 +37,6 @@ import { NzTagComponent } from 'ng-zorro-antd/tag';
         NzThMeasureDirective,
         NzThAddOnComponent,
         NzTbodyComponent,
-        NgFor,
-        NgIf,
         NzTdAddOnComponent,
         NzTagComponent,
         NzTrExpandDirective,
@@ -48,6 +46,8 @@ import { NzTagComponent } from 'ng-zorro-antd/tag';
     ],
 })
 export class RecipesListComponent {
+    private store = inject(Store);
+
     @Input() recipes: Recipe[] = [];
     @Input() loading = false;
     @Output() createRecipe = new EventEmitter();
@@ -61,8 +61,6 @@ export class RecipesListComponent {
 
     expandSet = new Set<number>();
     @ViewChild(NzTableComponent, { static: true }) recipeTable?: NzTableComponent<Recipe>;
-
-    constructor(private store: Store) {}
 
     sortByName(a: Recipe, b: Recipe) {
         return a.name.localeCompare(b.name);

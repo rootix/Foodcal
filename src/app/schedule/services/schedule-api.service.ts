@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { defer, from, Observable } from 'rxjs';
 import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
@@ -9,7 +9,7 @@ import { Meal, Recipe } from '../../model';
     providedIn: 'root',
 })
 export class ScheduleApiService {
-    constructor(private supabaseService: SupabaseService) {}
+    private supabaseService = inject(SupabaseService);
 
     getMealsOfWeek(startDate: Date, endDate: Date): Observable<Meal[]> {
         return defer(() =>

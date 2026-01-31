@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { NzModalModule, NzModalService } from 'ng-zorro-antd/modal';
 import { Observable } from 'rxjs';
@@ -14,15 +14,13 @@ import { AsyncPipe } from '@angular/common';
     imports: [RecipesListComponent, RecipeDialogComponent, AsyncPipe, NzModalModule],
 })
 export class RecipesViewComponent implements OnInit {
+    private store = inject(Store);
+    private modalService = inject(NzModalService);
+
     @ViewChild(RecipeDialogComponent) dialog?: RecipeDialogComponent;
 
     recipes$: Observable<Recipe[]> = this.store.select(RecipeState.getAllRecipes);
     loading$: Observable<boolean> = this.store.select(RecipeState.loading);
-
-    constructor(
-        private store: Store,
-        private modalService: NzModalService
-    ) {}
 
     ngOnInit() {
         this.store.dispatch(new LoadAllRecipes());
