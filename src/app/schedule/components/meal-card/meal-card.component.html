@@ -5,13 +5,11 @@
             <h3 class="card-title">
                 @if (!meal.recipe) {
                     <span>Kein Menü definiert</span>
-                }
-                @if (meal.recipe?.url) {
+                } @else if (meal.recipe.url) {
                     <a href="{{ meal.recipe.url }}" target="_blank">
                         {{ meal.recipe.name }}
                     </a>
-                }
-                @if (meal.recipe && !meal.recipe.url) {
+                } @else {
                     <span>{{ meal.recipe.name }}</span>
                 }
             </h3>

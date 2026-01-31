@@ -35,7 +35,9 @@ export class ScheduleApiService {
                                 date: toDateFromApi(m.date),
                                 type: m.type,
                                 notes: m.notes,
-                                recipe: <Recipe>{ id: m.recipe.id, name: m.recipe.name, url: m.recipe.url },
+                                recipe: m.recipe
+                                    ? <Recipe>{ id: m.recipe.id, name: m.recipe.name, url: m.recipe.url }
+                                    : undefined,
                             }
                     )
                 )
@@ -52,7 +54,7 @@ export class ScheduleApiService {
                     .insert({
                         date: toApiStringFromDate(meal.date),
                         type: meal.type,
-                        recipe: meal.recipe.id,
+                        recipe: meal.recipe!.id,
                         notes: meal.notes,
                     })
                     .select(`*, recipe(id, name, url)`)
@@ -68,11 +70,13 @@ export class ScheduleApiService {
                         date: toDateFromApi(result.data.date),
                         type: result.data.type,
                         notes: result.data.notes,
-                        recipe: <Recipe>{
-                            id: result.data.recipe.id,
-                            name: result.data.recipe.name,
-                            url: result.data.recipe.url,
-                        },
+                        recipe: result.data.recipe
+                            ? <Recipe>{
+                                  id: result.data.recipe.id,
+                                  name: result.data.recipe.name,
+                                  url: result.data.recipe.url,
+                              }
+                            : undefined,
                     };
                 })
             )
@@ -89,7 +93,7 @@ export class ScheduleApiService {
                         date: toApiStringFromDate(meal.date),
                         type: meal.type,
                         notes: meal.notes,
-                        recipe: meal.recipe.id,
+                        recipe: meal.recipe!.id,
                     })
                     .eq('id', meal.id)
             ).pipe(
