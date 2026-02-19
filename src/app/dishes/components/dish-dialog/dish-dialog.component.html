@@ -6,7 +6,7 @@
     (nzOnCancel)="isOpen = false"
 >
     <ng-template #modalTitle>
-        {{ isNew ? 'Neues Rezept' : 'Rezept bearbeiten' }}
+        {{ isNew ? 'Neue Speise' : 'Speise bearbeiten' }}
     </ng-template>
 
     <ng-template #modalContent>
@@ -21,22 +21,6 @@
                 <nz-form-label [nzSpan]="6" nzFor="url"> URL </nz-form-label>
                 <nz-form-control [nzSpan]="18">
                     <input nz-input name="url" id="url" formControlName="url" />
-                </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
-                <nz-form-label [nzSpan]="6" nzFor="tags"> Tags </nz-form-label>
-                <nz-form-control [nzSpan]="18">
-                    <nz-select nzId="tags" nzMode="tags" formControlName="tags">
-                        @for (item of tags$ | async; track item) {
-                            <nz-option [nzLabel]="item" [nzValue]="item"></nz-option>
-                        }
-                    </nz-select>
-                </nz-form-control>
-            </nz-form-item>
-            <nz-form-item>
-                <nz-form-label [nzSpan]="6" nzFor="note"> Notizen </nz-form-label>
-                <nz-form-control [nzSpan]="18">
-                    <textarea rows="4" nz-input name="note" id="note" formControlName="note"></textarea>
                 </nz-form-control>
             </nz-form-item>
         </form>

@@ -2,30 +2,29 @@ import { Injectable, inject } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { defer, from, Observable } from 'rxjs';
 import { SupabaseService } from './supabase.service';
-import { Recipe, RecipeFormValue } from '../../model';
+import { Dish, DishFormValue } from '../../model';
 import { toDateFromApi } from '../utils/date-utils';
 
 @Injectable({ providedIn: 'root' })
-export class RecipeApiService {
+export class DishApiService {
     private supabaseService = inject(SupabaseService);
 
-    getAllRecipes(): Observable<Recipe[]> {
+    getAllDishes(): Observable<Dish[]> {
         return defer(() =>
-            from(this.supabaseService.getClient().from('recipe_with_last_preparation').select('*')).pipe(
+            from(this.supabaseService.getClient().from('dish_with_last_preparation').select('*')).pipe(
                 map((result) => {
                     if (result.error) {
                         throw result.error;
                     }
 
                     return result.data.map(
-                        (r) =>
-                            <Recipe>{
-                                id: r.id,
-                                name: r.name,
-                                note: r.note,
-                                url: r.url,
-                                tags: r.tags,
-                                last_preparation: r.last_preparation ? toDateFromApi(r.last_preparation) : null,
+                        (d) =>
+                            <Dish>{
+                                id: d.id,
+                                name: d.name,
+                                url: d.url,
+                                deleted: d.deleted,
+                                last_preparation: d.last_preparation ? toDateFromApi(d.last_preparation) : null,
                             }
                     );
                 })
@@ -33,17 +32,15 @@ export class RecipeApiService {
         );
     }
 
-    createRecipe(recipe: RecipeFormValue): Observable<Recipe> {
+    createDish(dish: DishFormValue): Observable<Dish> {
         return defer(() =>
             from(
                 this.supabaseService
                     .getClient()
-                    .from('recipe')
+                    .from('dish')
                     .insert({
-                        name: recipe.name,
-                        url: recipe.url,
-                        tags: recipe.tags,
-                        note: recipe.note,
+                        name: dish.name,
+                        url: dish.url,
                     })
                     .select()
                     .single()
@@ -53,12 +50,10 @@ export class RecipeApiService {
                         throw result.error;
                     }
 
-                    return <Recipe>{
+                    return <Dish>{
                         id: result.data.id,
                         name: result.data.name,
-                        note: result.data.note,
                         url: result.data.url,
-                        tags: result.data.tags,
                         deleted: result.data.deleted,
                     };
                 })
@@ -66,20 +61,18 @@ export class RecipeApiService {
         );
     }
 
-    updateRecipe(recipe: RecipeFormValue & { id: number; deleted?: boolean }): Observable<void> {
+    updateDish(dish: DishFormValue & { id: number; deleted?: boolean }): Observable<void> {
         return defer(() =>
             from(
                 this.supabaseService
                     .getClient()
-                    .from('recipe')
+                    .from('dish')
                     .update({
-                        name: recipe.name,
-                        note: recipe.note,
-                        url: recipe.url,
-                        tags: recipe.tags,
-                        deleted: recipe.deleted,
+                        name: dish.name,
+                        url: dish.url,
+                        deleted: dish.deleted,
                     })
-                    .eq('id', recipe.id)
+                    .eq('id', dish.id)
             ).pipe(
                 map((result) => {
                     if (result.error) {

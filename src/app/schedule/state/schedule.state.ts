@@ -57,17 +57,11 @@ export class ScheduleState implements NgxsOnInit {
         interval.forEach((date: Date) => {
             const lunch =
                 existingMeals.find((m) => m.date.getTime() === date.getTime() && m.type === MealType.Lunch) ||
-                ({
-                    date,
-                    type: MealType.Lunch,
-                } as Meal);
+                ({ date, type: MealType.Lunch, dishes: [] } as unknown as Meal);
 
             const dinner =
                 existingMeals.find((m) => m.date.getTime() === date.getTime() && m.type === MealType.Dinner) ||
-                ({
-                    date,
-                    type: MealType.Dinner,
-                } as Meal);
+                ({ date, type: MealType.Dinner, dishes: [] } as unknown as Meal);
 
             const day: MealsPerDay = {
                 date,

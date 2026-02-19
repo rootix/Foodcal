@@ -1,5 +1,8 @@
-INSERT INTO recipe (id, name, url, deleted, tags, note) VALUES (1, 'Superfood', NULL, False, ARRAY['First Recipe'], 'Yummy Yummy Yummy i got love in my tummy');
+INSERT INTO dish (id, name, url, deleted) VALUES (1, 'Superfood', NULL, false);
 
-SELECT setval('recipe_id_seq', (SELECT MAX(id) FROM recipe)+1);
+SELECT setval('dish_id_seq', (SELECT MAX(id) FROM dish)+1);
 
-INSERT INTO meal (date, recipe, type, notes) VALUES (CURRENT_DATE, 1, 'Dinner', NULL);
+INSERT INTO meal (date, type, notes) VALUES (CURRENT_DATE, 'Dinner', NULL) RETURNING id;
+
+INSERT INTO meal_dish (meal_id, dish_id)
+SELECT id, 1 FROM meal WHERE date = CURRENT_DATE AND type = 'Dinner';

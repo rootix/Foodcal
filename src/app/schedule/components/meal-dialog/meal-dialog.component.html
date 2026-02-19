@@ -12,21 +12,21 @@
     <ng-template #modalContent>
         <form nz-form [formGroup]="form" nzLayout="vertical">
             <nz-form-item>
-                <nz-form-label [nzSpan]="6" nzFor="recipe" nzRequired> Rezept </nz-form-label>
-                <nz-form-control [nzSpan]="18" nzErrorTip="Pflichtfeld">
+                <nz-form-label [nzSpan]="6" nzFor="dishes"> Speisen </nz-form-label>
+                <nz-form-control [nzSpan]="18">
                     <nz-select
+                        nzMode="tags"
                         nzShowSearch
-                        nzAllowClear
-                        formControlName="recipe"
+                        formControlName="dishes"
+                        [nzTokenSeparators]="[',']"
                         [nzDropdownRender]="renderTemplate"
-                        [compareWith]="recipeCompareFn"
                     >
-                        @for (item of allRecipes$ | async; track item.id) {
-                            <nz-option [nzLabel]="formatRecipeLabel(item)" [nzValue]="item"></nz-option>
+                        @for (item of allDishes$ | async; track item.id) {
+                            <nz-option [nzLabel]="item.name" [nzValue]="item.name"></nz-option>
                         }
                     </nz-select>
                     <ng-template #renderTemplate>
-                        @if (allRecipesLoading$ | async) {
+                        @if (allDishesLoading$ | async) {
                             <nz-spin></nz-spin>
                         }
                     </ng-template>

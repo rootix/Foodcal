@@ -8,7 +8,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideStore } from '@ngxs/store';
 import { AuthState } from './app/shared/state/auth';
-import { RecipeState } from './app/shared/state/recipe';
+import { DishState } from './app/shared/state/dish';
 import { withNgxsStoragePlugin } from '@ngxs/storage-plugin';
 import { withNgxsReduxDevtoolsPlugin } from '@ngxs/devtools-plugin';
 import { AppComponent } from './app/app.component';
@@ -27,7 +27,7 @@ bootstrapApplication(AppComponent, {
         provideZonelessChangeDetection(),
         provideRouter(routes),
         provideStore(
-            [AuthState, RecipeState],
+            [AuthState, DishState],
             { developmentMode: !environment.production, selectorOptions: { suppressErrors: true } },
             withNgxsStoragePlugin({ keys: ['auth.token'] }),
             withNgxsReduxDevtoolsPlugin()

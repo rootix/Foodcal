@@ -3,14 +3,19 @@
         <div class="card-block">
             <span class="card-tag">{{ meal.type === MealType.Lunch ? 'Mittag' : 'Abend' }}</span>
             <h3 class="card-title">
-                @if (!meal.recipe) {
+                @if (!meal.dishes.length) {
                     <span>Kein Menü definiert</span>
-                } @else if (meal.recipe.url) {
-                    <a href="{{ meal.recipe.url }}" target="_blank">
-                        {{ meal.recipe.name }}
-                    </a>
                 } @else {
-                    <span>{{ meal.recipe.name }}</span>
+                    @for (dish of meal.dishes; track dish.id; let last = $last) {
+                        @if (dish.url) {
+                            <a href="{{ dish.url }}" target="_blank">{{ dish.name }}</a>
+                        } @else {
+                            <span>{{ dish.name }}</span>
+                        }
+                        @if (!last) {
+                            <span>, </span>
+                        }
+                    }
                 }
             </h3>
             @if (meal.notes) {

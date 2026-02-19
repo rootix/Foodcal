@@ -1,0 +1,9 @@
+<h1 class="page-title">Speisen</h1>
+<fc-dishes-list
+    [loading]="(loading$ | async)!"
+    [dishes]="(dishes$ | async)!"
+    (createDish)="onCreateDish()"
+    (editDish)="onEditDish($event)"
+    (deleteDish)="onDeleteDish($event)"
+></fc-dishes-list>
+<fc-dish-dialog></fc-dish-dialog>

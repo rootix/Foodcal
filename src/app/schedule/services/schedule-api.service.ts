@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { defer, from, Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
+import { defer, from, Observable, of } from 'rxjs';
 import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
 import { SupabaseService } from '../../shared/services/supabase.service';
-import { Meal, MealFormValue, Recipe } from '../../model';
+import { Dish, Meal, MealFormValue } from '../../model';
 
 @Injectable({
     providedIn: 'root',
@@ -17,7 +17,7 @@ export class ScheduleApiService {
                 this.supabaseService
                     .getClient()
                     .from('meal')
-                    .select(`*, recipe(id, name, url)`)
+                    .select(`*, meal_dish(dish:dish_id(id, name, url))`)
                     .lte('date', toApiStringFromDate(endDate))
                     .gte('date', toApiStringFromDate(startDate))
             ).pipe(
@@ -35,9 +35,12 @@ export class ScheduleApiService {
                                 date: toDateFromApi(m.date),
                                 type: m.type,
                                 notes: m.notes,
-                                recipe: m.recipe
-                                    ? <Recipe>{ id: m.recipe.id, name: m.recipe.name, url: m.recipe.url }
-                                    : undefined,
+                                dishes: (
+                                    m.meal_dish as { dish: { id: number; name: string; url: string | null } }[]
+                                ).map(
+                                    (md) =>
+                                        <Dish>{ id: md.dish.id, name: md.dish.name, url: md.dish.url, deleted: false }
+                                ),
                             }
                     )
                 )
@@ -45,7 +48,7 @@ export class ScheduleApiService {
         );
     }
 
-    createMeal(meal: MealFormValue) {
+    createMeal(meal: MealFormValue): Observable<Meal> {
         return defer(() =>
             from(
                 this.supabaseService
@@ -54,36 +57,46 @@ export class ScheduleApiService {
                     .insert({
                         date: toApiStringFromDate(meal.date),
                         type: meal.type,
-                        recipe: meal.recipe!.id,
                         notes: meal.notes,
                     })
-                    .select(`*, recipe(id, name, url)`)
+                    .select()
                     .single()
             ).pipe(
                 map((result) => {
                     if (result.error) {
                         throw result.error;
                     }
-
-                    return <Meal>{
-                        id: result.data.id,
-                        date: toDateFromApi(result.data.date),
-                        type: result.data.type,
-                        notes: result.data.notes,
-                        recipe: result.data.recipe
-                            ? <Recipe>{
-                                  id: result.data.recipe.id,
-                                  name: result.data.recipe.name,
-                                  url: result.data.recipe.url,
-                              }
-                            : undefined,
-                    };
-                })
+                    return result.data;
+                }),
+                switchMap((mealRow) => {
+                    const dishInserts = meal.dishes.map((d) => ({ meal_id: mealRow.id, dish_id: d.id }));
+                    if (dishInserts.length === 0) {
+                        return of({ mealRow, dishes: [] as Dish[] });
+                    }
+                    return from(this.supabaseService.getClient().from('meal_dish').insert(dishInserts)).pipe(
+                        map((result) => {
+                            if (result.error) {
+                                throw result.error;
+                            }
+                            return { mealRow, dishes: meal.dishes };
+                        })
+                    );
+                }),
+                map(
+                    ({ mealRow, dishes }) =>
+                        <Meal>{
+                            id: mealRow.id,
+                            date: toDateFromApi(mealRow.date),
+                            type: mealRow.type,
+                            notes: mealRow.notes,
+                            dishes,
+                        }
+                )
             )
         );
     }
 
-    updateMeal(meal: MealFormValue & { id: number }) {
+    updateMeal(meal: MealFormValue & { id: number }): Observable<void> {
         return defer(() =>
             from(
                 this.supabaseService
@@ -93,7 +106,6 @@ export class ScheduleApiService {
                         date: toApiStringFromDate(meal.date),
                         type: meal.type,
                         notes: meal.notes,
-                        recipe: meal.recipe!.id,
                     })
                     .eq('id', meal.id)
             ).pipe(
@@ -101,6 +113,28 @@ export class ScheduleApiService {
                     if (result.error) {
                         throw result.error;
                     }
+                }),
+                switchMap(() =>
+                    from(this.supabaseService.getClient().from('meal_dish').delete().eq('meal_id', meal.id)).pipe(
+                        map((result) => {
+                            if (result.error) {
+                                throw result.error;
+                            }
+                        })
+                    )
+                ),
+                switchMap(() => {
+                    const dishInserts = meal.dishes.map((d) => ({ meal_id: meal.id, dish_id: d.id }));
+                    if (dishInserts.length === 0) {
+                        return of(undefined);
+                    }
+                    return from(this.supabaseService.getClient().from('meal_dish').insert(dishInserts)).pipe(
+                        map((result) => {
+                            if (result.error) {
+                                throw result.error;
+                            }
+                        })
+                    );
                 })
             )
         );
