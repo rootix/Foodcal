@@ -20,3 +20,14 @@
 ></fc-week-selector>
 
 <fc-week-container [mealsOfWeek]="(mealsOfWeek$ | async)!" [loading]="(loading$ | async)!"></fc-week-container>
+
+@if (showTodayButton()) {
+    <nz-float-button
+        nzType="primary"
+        nzIcon="home"
+        nz-tooltip
+        nzTooltipTitle="zu Heute springen"
+        nzTooltipPlacement="left"
+        (nzOnClick)="onGoToToday()"
+    ></nz-float-button>
+}
