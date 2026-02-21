@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { EMPTY, Observable, firstValueFrom } from 'rxjs';
@@ -36,7 +36,7 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
         AsyncPipe,
     ],
 })
-export class MealDialogComponent implements OnInit {
+export class MealDialogComponent implements OnInit, OnDestroy {
     private store = inject(Store);
 
     allDishes$: Observable<Dish[]> = this.store
@@ -56,11 +56,32 @@ export class MealDialogComponent implements OnInit {
     });
 
     submitLoading = false;
+    isSelectOpen = false;
+    isCreatingDish = false;
+    searchText = '';
 
     private submitHandler: (meal: MealFormValue) => Observable<void> = (_) => EMPTY;
 
+    private readonly captureEnter = (event: KeyboardEvent): void => {
+        if (event.key !== 'Enter' || !this.isSelectOpen || !this.searchText.trim()) return;
+        const allDishes = this.store.selectSnapshot(DishState.getAllDishes);
+        const selectedNames = this.form.controls.dishes.value ?? [];
+        const hasMatch = allDishes.some(
+            (d) => !selectedNames.includes(d.name) && d.name.toLowerCase().includes(this.searchText.toLowerCase())
+        );
+        if (hasMatch) return;
+        event.preventDefault();
+        event.stopPropagation();
+        void this.createAndAddDish(this.searchText.trim());
+    };
+
     ngOnInit() {
+        document.addEventListener('keydown', this.captureEnter, true);
         this.store.dispatch(new EnsureLoadAllDishes());
+    }
+
+    ngOnDestroy() {
+        document.removeEventListener('keydown', this.captureEnter, true);
     }
 
     open(meal: Partial<Meal>, submitHandler: (meal: MealFormValue) => Observable<void>) {
@@ -77,6 +98,31 @@ export class MealDialogComponent implements OnInit {
         this.isOpen = true;
     }
 
+    isSelected(name: string): boolean {
+        return (this.form.controls.dishes.value ?? []).includes(name);
+    }
+
+    addNewDish(event: MouseEvent): void {
+        event.preventDefault(); // prevent blur before mousedown completes
+        void this.createAndAddDish(this.searchText.trim());
+    }
+
+    private async createAndAddDish(name: string): Promise<void> {
+        if (!name || this.isCreatingDish) return;
+        const current = this.form.controls.dishes.value ?? [];
+        if (current.includes(name)) return;
+
+        this.isCreatingDish = true;
+        try {
+            await firstValueFrom(this.store.dispatch(new CreateDish({ id: null, name, url: null })));
+            this.form.controls.dishes.setValue([...current, name]);
+            this.searchText = '';
+            this.isSelectOpen = false;
+        } finally {
+            this.isCreatingDish = false;
+        }
+    }
+
     async onSubmit() {
         this.form.markAllAsTouched();
 
@@ -86,23 +132,7 @@ export class MealDialogComponent implements OnInit {
 
         const dishNames: string[] = this.form.value.dishes ?? [];
         const allDishes = this.store.selectSnapshot(DishState.getAllDishes);
-
-        const resolvedDishes: Dish[] = [];
-        for (const name of dishNames) {
-            const existing = allDishes.find((d) => d.name === name);
-            if (existing) {
-                resolvedDishes.push(existing);
-            } else {
-                const newDish = await firstValueFrom(
-                    this.store
-                        .dispatch(new CreateDish({ id: null, name, url: null }))
-                        .pipe(
-                            map(() => this.store.selectSnapshot(DishState.getAllDishes).find((d) => d.name === name)!)
-                        )
-                );
-                resolvedDishes.push(newDish);
-            }
-        }
+        const resolvedDishes: Dish[] = dishNames.map((name) => allDishes.find((d) => d.name === name)!);
 
         const mealValue = {
             ...this.form.getRawValue(),

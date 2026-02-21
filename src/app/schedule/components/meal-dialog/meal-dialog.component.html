@@ -15,19 +15,33 @@
                 <nz-form-label [nzSpan]="6" nzFor="dishes"> Speisen </nz-form-label>
                 <nz-form-control [nzSpan]="18">
                     <nz-select
-                        nzMode="tags"
+                        nzMode="multiple"
                         nzShowSearch
                         formControlName="dishes"
-                        [nzTokenSeparators]="[',']"
-                        [nzDropdownRender]="renderTemplate"
+                        [nzOpen]="isSelectOpen"
+                        (nzOpenChange)="isSelectOpen = $event"
+                        [nzNotFoundContent]="notFoundTemplate"
+                        (nzOnSearch)="searchText = $event"
                     >
                         @for (item of allDishes$ | async; track item.id) {
-                            <nz-option [nzLabel]="item.name" [nzValue]="item.name"></nz-option>
+                            <nz-option
+                                [nzLabel]="item.name"
+                                [nzValue]="item.name"
+                                [nzHide]="isSelected(item.name)"
+                            ></nz-option>
                         }
                     </nz-select>
-                    <ng-template #renderTemplate>
+                    <ng-template #notFoundTemplate>
                         @if (allDishesLoading$ | async) {
                             <nz-spin></nz-spin>
+                        } @else {
+                            <div style="padding: 5px 12px; cursor: pointer" (mousedown)="addNewDish($event)">
+                                @if (isCreatingDish) {
+                                    <nz-spin nzSize="small"></nz-spin>
+                                } @else {
+                                    + "{{ searchText }}" erstellen
+                                }
+                            </div>
                         }
                     </ng-template>
                 </nz-form-control>
