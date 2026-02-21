@@ -16,6 +16,7 @@
             @if (meal.dishes.length > 1) {
                 <p class="card-sides">
                     mit
+                    <!-- prettier-ignore -->
                     @for (
                         dish of meal.dishes.slice(1);
                         track dish.id;
@@ -27,12 +28,9 @@
                             <span> und </span>
                         }
                         @if (dish.url) {
-                            <a href="{{ dish.url }}" target="_blank">{{ dish.name }}</a>
+                            <a href="{{ dish.url }}" target="_blank">{{ dish.name }}</a>@if (i < count - 2) {,}
                         } @else {
-                            {{ dish.name }}
-                        }
-                        @if (i < count - 2) {
-                            <span>,</span>
+                            {{ dish.name }}@if (i < count - 2) {,}
                         }
                     }
                 </p>
