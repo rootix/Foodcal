@@ -21,6 +21,7 @@
                         [nzOpen]="isSelectOpen"
                         (nzOpenChange)="isSelectOpen = $event"
                         [nzNotFoundContent]="notFoundTemplate"
+                        [nzOptionOverflowSize]="5"
                         (nzOnSearch)="searchText = $event"
                     >
                         @for (item of allDishes$ | async; track item.id) {
