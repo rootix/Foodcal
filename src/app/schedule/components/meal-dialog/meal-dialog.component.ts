@@ -116,5 +116,4 @@ export class MealDialogComponent implements OnInit {
                 this.isOpen = false;
             });
     }
-
 }

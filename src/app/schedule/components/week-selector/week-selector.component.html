@@ -1,19 +1,17 @@
 <button nz-button nzType="text" (click)="switchToPreviousWeek.emit()">
     <nz-icon nzType="left-circle" />
 </button>
-<span class="week-info" [class.current]="week.isCurrentWeek" (click)="pickerOpen = true">
-    <strong>KW {{ week.calendarWeek }}</strong> ({{ week.startDate | date: 'dd.MM.' }} –
-    {{ week.endDate | date: 'dd.MM.yyyy' }})
-    <nz-icon nzType="calendar" class="calendar-icon" />
-</span>
 <nz-date-picker
+    #weekPicker
     class="week-picker"
     nzMode="week"
-    [nzOpen]="pickerOpen"
-    (nzOpenChange)="onPickerOpenChange($any($event))"
     [ngModel]="week.startDate"
     (ngModelChange)="onWeekChange($event)"
 />
+<span class="week-info" [class.current]="week.isCurrentWeek" (click)="openPicker()">
+    <strong>KW {{ week.calendarWeek }}</strong> ({{ week.startDate | date: 'dd.MM.' }} –
+    {{ week.endDate | date: 'dd.MM.yyyy' }})</span
+>
 <button nz-button nzType="text" (click)="switchToNextWeek.emit()">
     <nz-icon nzType="right-circle" />
 </button>

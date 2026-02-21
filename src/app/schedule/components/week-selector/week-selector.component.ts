@@ -1,18 +1,18 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DatePipe } from '@angular/common';
 import { Week } from '../../models/schedule.model';
 import { getCurrentWeek } from '../../utils/week-utils';
-import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzIconDirective } from 'ng-zorro-antd/icon';
-import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { DatePipe } from '@angular/common';
+import { NzButtonComponent } from 'ng-zorro-antd/button';
+import { NzDatePickerComponent, NzDatePickerModule } from 'ng-zorro-antd/date-picker';
 
 @Component({
     selector: 'fc-week-selector',
     templateUrl: './week-selector.component.html',
     styleUrl: './week-selector.component.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NzButtonComponent, NzIconDirective, NzDatePickerModule, FormsModule, DatePipe],
+    imports: [NzButtonComponent, NzDatePickerModule, FormsModule, DatePipe, NzIconDirective],
 })
 export class WeekSelectorComponent {
     @Input() week: Week = getCurrentWeek();
@@ -20,16 +20,16 @@ export class WeekSelectorComponent {
     @Output() switchToPreviousWeek = new EventEmitter();
     @Output() switchToWeek = new EventEmitter<Date>();
 
-    pickerOpen = false;
+    @ViewChild('weekPicker') picker!: NzDatePickerComponent;
+
+    openPicker() {
+        this.picker.open();
+        this.picker.focus();
+    }
 
     onWeekChange(date: Date) {
         if (date) {
             this.switchToWeek.emit(date);
         }
-        this.pickerOpen = false;
-    }
-
-    onPickerOpenChange(open: boolean) {
-        this.pickerOpen = open;
     }
 }

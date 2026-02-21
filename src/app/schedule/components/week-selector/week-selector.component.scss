@@ -2,16 +2,9 @@
     cursor: pointer;
 }
 
-.calendar-icon {
-    margin-left: 0.25rem;
-    font-size: 0.9em;
-    opacity: 0.6;
-}
-
 .week-picker {
     position: absolute;
-    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
     width: 0;
-    padding: 0;
-    border: 0;
 }
