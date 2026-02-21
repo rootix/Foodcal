@@ -1,8 +1,9 @@
 import { Component, HostBinding, Input, ViewChild, inject } from '@angular/core';
 import { Store } from '@ngxs/store';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { CreateMeal, DeleteMeal, UpdateMeal } from '../../state/schedule.actions';
+import { CreateMeal, DeleteMeal, MoveMeal, UpdateMeal } from '../../state/schedule.actions';
 import { MealDialogComponent } from '../meal-dialog/meal-dialog.component';
+import { MoveMealDialogComponent } from '../move-meal-dialog/move-meal-dialog.component';
 import { MealsPerDay } from '../../models/schedule.model';
 import { Meal, MealFormValue } from '../../../model';
 
@@ -14,7 +15,7 @@ import { MealCardComponent } from '../meal-card/meal-card.component';
     selector: 'fc-week-container',
     templateUrl: './week-container.component.html',
     styleUrls: ['./week-container.component.scss'],
-    imports: [NzSpinComponent, DayContainerComponent, MealCardComponent, MealDialogComponent],
+    imports: [NzSpinComponent, DayContainerComponent, MealCardComponent, MealDialogComponent, MoveMealDialogComponent],
 })
 export class WeekContainerComponent {
     private store = inject(Store);
@@ -22,6 +23,7 @@ export class WeekContainerComponent {
 
     @Input() mealsOfWeek: MealsPerDay[] = [];
     @ViewChild(MealDialogComponent) dialog?: MealDialogComponent;
+    @ViewChild(MoveMealDialogComponent) moveDialog?: MoveMealDialogComponent;
     @HostBinding('class.loading') @Input() loading = false;
 
     onCreateMeal(meal: Meal) {
@@ -38,6 +40,12 @@ export class WeekContainerComponent {
         }
 
         this.dialog.open(meal, (m) => this.store.dispatch(new UpdateMeal(m as MealFormValue & { id: number })));
+    }
+
+    onMoveMeal(meal: Meal) {
+        this.moveDialog!.open(meal.date, meal.type, ({ targetDate, targetType }) =>
+            this.store.dispatch(new MoveMeal(meal.id, targetDate, targetType))
+        );
     }
 
     onDeleteMeal(meal: Meal) {

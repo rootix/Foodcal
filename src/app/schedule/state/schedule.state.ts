@@ -9,6 +9,7 @@ import {
     DeleteMeal,
     EnsureInitializeSchedule,
     LoadMealsOfWeek,
+    MoveMeal,
     NavigateToWeek,
     UpdateMeal,
     WeekLoaded,
@@ -106,6 +107,16 @@ export class ScheduleState implements NgxsOnInit {
             .pipe(
                 tap((deletedId) => ctx.setState(patch({ mealsOfWeek: removeItem<Meal>((m) => m?.id === deletedId) })))
             );
+    }
+
+    @Action(MoveMeal)
+    private moveMeal(ctx: StateContext<ScheduleStateModel>, { sourceMealId, targetDate, targetType }: MoveMeal) {
+        return this.scheduleApiService.moveMeal(sourceMealId, targetDate, targetType).pipe(
+            switchMap(() => {
+                const { week } = ctx.getState();
+                return ctx.dispatch(new LoadMealsOfWeek(week.startDate, week.endDate));
+            })
+        );
     }
 
     @Action(EnsureInitializeSchedule)

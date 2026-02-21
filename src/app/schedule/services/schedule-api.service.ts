@@ -3,7 +3,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { defer, from, Observable, of } from 'rxjs';
 import { toApiStringFromDate, toDateFromApi } from '../../shared/utils/date-utils';
 import { SupabaseService } from '../../shared/services/supabase.service';
-import { Dish, Meal, MealFormValue } from '../../model';
+import { Dish, Meal, MealFormValue, MealType } from '../../model';
 
 @Injectable({
     providedIn: 'root',
@@ -133,6 +133,75 @@ export class ScheduleApiService {
                             if (result.error) {
                                 throw result.error;
                             }
+                        })
+                    );
+                })
+            )
+        );
+    }
+
+    moveMeal(sourceMealId: number, targetDate: Date, targetType: MealType): Observable<void> {
+        const targetDateStr = toApiStringFromDate(targetDate);
+        return defer(() =>
+            from(
+                this.supabaseService.getClient().from('meal').select('id, date, type').eq('id', sourceMealId).single()
+            ).pipe(
+                map((r) => {
+                    if (r.error) throw r.error;
+                    return r.data;
+                }),
+                switchMap((sourceMeal) =>
+                    from(
+                        this.supabaseService
+                            .getClient()
+                            .from('meal')
+                            .select('id')
+                            .eq('date', targetDateStr)
+                            .eq('type', targetType)
+                            .maybeSingle()
+                    ).pipe(
+                        map((r) => {
+                            if (r.error) throw r.error;
+                            return { sourceMeal, occupant: r.data };
+                        })
+                    )
+                ),
+                switchMap(({ sourceMeal, occupant }) => {
+                    if (occupant && occupant.id !== sourceMealId) {
+                        return from(
+                            this.supabaseService
+                                .getClient()
+                                .from('meal')
+                                .update({ date: sourceMeal.date, type: sourceMeal.type })
+                                .eq('id', occupant.id)
+                        ).pipe(
+                            map((r) => {
+                                if (r.error) throw r.error;
+                            }),
+                            switchMap(() =>
+                                from(
+                                    this.supabaseService
+                                        .getClient()
+                                        .from('meal')
+                                        .update({ date: targetDateStr, type: targetType })
+                                        .eq('id', sourceMealId)
+                                ).pipe(
+                                    map((r) => {
+                                        if (r.error) throw r.error;
+                                    })
+                                )
+                            )
+                        );
+                    }
+                    return from(
+                        this.supabaseService
+                            .getClient()
+                            .from('meal')
+                            .update({ date: targetDateStr, type: targetType })
+                            .eq('id', sourceMealId)
+                    ).pipe(
+                        map((r) => {
+                            if (r.error) throw r.error;
                         })
                     );
                 })

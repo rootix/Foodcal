@@ -15,6 +15,7 @@ export class MealCardComponent {
 
     @Output() createMeal = new EventEmitter<Meal>();
     @Output() editMeal = new EventEmitter<Meal>();
+    @Output() moveMeal = new EventEmitter<Meal>();
     @Output() deleteMeal = new EventEmitter<Meal>();
 
     MealType = MealType;

@@ -1,4 +1,4 @@
-import { MealFormValue } from '../../model';
+import { MealFormValue, MealType } from '../../model';
 
 export class WeekLoading {
     static readonly type = '[Schedule] Week Loading';
@@ -29,6 +29,15 @@ export class UpdateMeal {
 export class DeleteMeal {
     static readonly type = '[Schedule] Delete Meal';
     constructor(public id: number) {}
+}
+
+export class MoveMeal {
+    static readonly type = '[Schedule] Move Meal';
+    constructor(
+        public sourceMealId: number,
+        public targetDate: Date,
+        public targetType: MealType
+    ) {}
 }
 
 export class EnsureInitializeSchedule {

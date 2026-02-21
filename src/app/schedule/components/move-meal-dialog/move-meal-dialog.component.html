@@ -1,0 +1,36 @@
+<nz-modal
+    [(nzVisible)]="isOpen"
+    nzTitle="Menu verschieben"
+    [nzContent]="modalContent"
+    [nzFooter]="modalFooter"
+    (nzOnCancel)="isOpen = false"
+>
+    <ng-template #modalContent>
+        <form nz-form [formGroup]="form" nzLayout="vertical">
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="targetDate">Zieldatum</nz-form-label>
+                <nz-form-control [nzSpan]="18">
+                    <nz-date-picker
+                        formControlName="targetDate"
+                        nzFormat="dd.MM.yyyy"
+                        [nzAllowClear]="false"
+                        style="width: 100%"
+                    ></nz-date-picker>
+                </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+                <nz-form-label [nzSpan]="6" nzFor="targetType">Mahlzeit</nz-form-label>
+                <nz-form-control [nzSpan]="18">
+                    <nz-select formControlName="targetType" style="width: 100%">
+                        <nz-option [nzValue]="MealType.Lunch" nzLabel="Mittag"></nz-option>
+                        <nz-option [nzValue]="MealType.Dinner" nzLabel="Abend"></nz-option>
+                    </nz-select>
+                </nz-form-control>
+            </nz-form-item>
+        </form>
+    </ng-template>
+    <ng-template #modalFooter>
+        <button nz-button nzType="default" (click)="isOpen = false">Abbrechen</button>
+        <button nz-button nzType="primary" [nzLoading]="loading" (click)="onSubmit()">Verschieben</button>
+    </ng-template>
+</nz-modal>

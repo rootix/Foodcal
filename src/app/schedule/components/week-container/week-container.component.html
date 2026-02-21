@@ -8,6 +8,7 @@
                 [meal]="meal"
                 (createMeal)="onCreateMeal($event)"
                 (editMeal)="onEditMeal($event)"
+                (moveMeal)="onMoveMeal($event)"
                 (deleteMeal)="onDeleteMeal($event)"
             ></fc-meal-card>
         }
@@ -15,3 +16,4 @@
 }
 
 <fc-meal-dialog></fc-meal-dialog>
+<fc-move-meal-dialog></fc-move-meal-dialog>
