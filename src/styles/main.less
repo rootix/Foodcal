@@ -33,3 +33,21 @@
 .ant-dropdown {
     position: initial !important;
 }
+
+// PWA status bar: override Ant Design's body reset so overscroll areas show the nav color
+html,
+body {
+    background-color: #00364d;
+}
+
+// Fixed overlay that always shows behind the transparent iOS status bar
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: env(safe-area-inset-top);
+    background-color: #00364d;
+    z-index: 999;
+}
