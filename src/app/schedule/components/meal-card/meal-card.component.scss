@@ -1,12 +1,28 @@
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
 :host::ng-deep {
     .ant-card {
-        margin-top: 1.5rem;
+        margin-top: 1rem;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ant-card-body {
+        flex: 1;
     }
 }
 
 .card-tag {
     font-size: 0.8em;
     letter-spacing: 0.03rem;
+}
+
+.card-title {
+    word-break: break-word;
 }
 
 .card-sides {
@@ -36,12 +52,8 @@
 @media all and (min-width: 41.6666rem) {
     :host {
         margin: 0 0.25rem;
-        width: 25rem;
-    }
-
-    :host::ng-deep {
-        .ant-card-body {
-            min-height: 8.6875rem;
-        }
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: 25rem;
     }
 }
