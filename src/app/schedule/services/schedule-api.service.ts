@@ -17,9 +17,10 @@ export class ScheduleApiService {
                 this.supabaseService
                     .getClient()
                     .from('meal')
-                    .select(`*, meal_dish(dish:dish_id(id, name, url))`)
+                    .select(`*, meal_dish(sort_index, dish:dish_id(id, name, url))`)
                     .lte('date', toApiStringFromDate(endDate))
                     .gte('date', toApiStringFromDate(startDate))
+                    .order('sort_index', { referencedTable: 'meal_dish', ascending: true })
             ).pipe(
                 map((result) => {
                     if (result.error) {
@@ -36,7 +37,10 @@ export class ScheduleApiService {
                                 type: m.type,
                                 notes: m.notes,
                                 dishes: (
-                                    m.meal_dish as { dish: { id: number; name: string; url: string | null } }[]
+                                    m.meal_dish as {
+                                        sort_index: number;
+                                        dish: { id: number; name: string; url: string | null };
+                                    }[]
                                 ).map(
                                     (md) =>
                                         <Dish>{ id: md.dish.id, name: md.dish.name, url: md.dish.url, deleted: false }
@@ -69,7 +73,11 @@ export class ScheduleApiService {
                     return result.data;
                 }),
                 switchMap((mealRow) => {
-                    const dishInserts = meal.dishes.map((d) => ({ meal_id: mealRow.id, dish_id: d.id }));
+                    const dishInserts = meal.dishes.map((d, i) => ({
+                        meal_id: mealRow.id,
+                        dish_id: d.id,
+                        sort_index: i,
+                    }));
                     if (dishInserts.length === 0) {
                         return of({ mealRow, dishes: [] as Dish[] });
                     }
@@ -124,7 +132,7 @@ export class ScheduleApiService {
                     )
                 ),
                 switchMap(() => {
-                    const dishInserts = meal.dishes.map((d) => ({ meal_id: meal.id, dish_id: d.id }));
+                    const dishInserts = meal.dishes.map((d, i) => ({ meal_id: meal.id, dish_id: d.id, sort_index: i }));
                     if (dishInserts.length === 0) {
                         return of(undefined);
                     }

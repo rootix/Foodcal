@@ -28,14 +28,17 @@ export interface Database {
                 Row: {
                     meal_id: number;
                     dish_id: number;
+                    sort_index: number;
                 };
                 Insert: {
                     meal_id: number;
                     dish_id: number;
+                    sort_index?: number;
                 };
                 Update: {
                     meal_id?: number;
                     dish_id?: number;
+                    sort_index?: number;
                 };
                 Relationships: [
                     {
