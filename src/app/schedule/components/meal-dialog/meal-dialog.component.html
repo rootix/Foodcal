@@ -44,6 +44,55 @@
                             </div>
                         }
                     </ng-template>
+                    @if (selectedDishes.length > 1) {
+                        <button
+                            type="button"
+                            nz-button
+                            nzType="link"
+                            nzSize="small"
+                            class="reorder-toggle"
+                            (click)="isReorderVisible = !isReorderVisible"
+                        >
+                            {{ isReorderVisible ? 'Reihenfolge ausblenden' : 'Reihenfolge ändern' }}
+                        </button>
+                    }
+                    @if (selectedDishes.length > 1 && isReorderVisible) {
+                        <ol class="dish-order-list">
+                            @for (
+                                name of selectedDishes;
+                                track name;
+                                let i = $index;
+                                let first = $first;
+                                let last = $last
+                            ) {
+                                <li>
+                                    <span>{{ name }}</span>
+                                    <span class="dish-order-actions">
+                                        <button
+                                            type="button"
+                                            nz-button
+                                            nzType="text"
+                                            nzSize="small"
+                                            [disabled]="first"
+                                            (click)="moveDish(i, -1)"
+                                        >
+                                            <i nz-icon nzType="up"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            nz-button
+                                            nzType="text"
+                                            nzSize="small"
+                                            [disabled]="last"
+                                            (click)="moveDish(i, 1)"
+                                        >
+                                            <i nz-icon nzType="down"></i>
+                                        </button>
+                                    </span>
+                                </li>
+                            }
+                        </ol>
+                    }
                 </nz-form-control>
             </nz-form-item>
             <nz-form-item>

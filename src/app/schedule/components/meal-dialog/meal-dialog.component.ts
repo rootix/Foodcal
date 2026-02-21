@@ -14,10 +14,12 @@ import { NzSpinComponent } from 'ng-zorro-antd/spin';
 import { NzInputDirective } from 'ng-zorro-antd/input';
 import { NzButtonComponent } from 'ng-zorro-antd/button';
 import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
+import { NzIconDirective } from 'ng-zorro-antd/icon';
 
 @Component({
     selector: 'fc-meal-dialog',
     templateUrl: './meal-dialog.component.html',
+    styleUrl: './meal-dialog.component.scss',
     imports: [
         NzModalComponent,
         ReactiveFormsModule,
@@ -33,6 +35,7 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
         NzInputDirective,
         NzButtonComponent,
         NzWaveDirective,
+        NzIconDirective,
         AsyncPipe,
     ],
 })
@@ -58,6 +61,7 @@ export class MealDialogComponent implements OnInit, OnDestroy {
     submitLoading = false;
     isSelectOpen = false;
     isCreatingDish = false;
+    isReorderVisible = false;
     searchText = '';
 
     private submitHandler: (meal: MealFormValue) => Observable<void> = (_) => EMPTY;
@@ -86,6 +90,7 @@ export class MealDialogComponent implements OnInit, OnDestroy {
 
     open(meal: Partial<Meal>, submitHandler: (meal: MealFormValue) => Observable<void>) {
         this.form.reset();
+        this.isReorderVisible = false;
         this.isNew = !meal.id;
         this.submitHandler = submitHandler;
         this.form.patchValue({
@@ -98,8 +103,19 @@ export class MealDialogComponent implements OnInit, OnDestroy {
         this.isOpen = true;
     }
 
+    get selectedDishes(): string[] {
+        return this.form.controls.dishes.value ?? [];
+    }
+
     isSelected(name: string): boolean {
-        return (this.form.controls.dishes.value ?? []).includes(name);
+        return this.selectedDishes.includes(name);
+    }
+
+    moveDish(index: number, direction: -1 | 1): void {
+        const dishes = [...this.selectedDishes];
+        const target = index + direction;
+        [dishes[index], dishes[target]] = [dishes[target], dishes[index]];
+        this.form.controls.dishes.setValue(dishes);
     }
 
     addNewDish(event: MouseEvent): void {
