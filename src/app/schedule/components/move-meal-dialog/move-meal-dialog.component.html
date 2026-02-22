@@ -1,6 +1,6 @@
 <nz-modal
     [(nzVisible)]="isOpen"
-    nzTitle="Menu verschieben"
+    [nzTitle]="title"
     [nzContent]="modalContent"
     [nzFooter]="modalFooter"
     (nzOnCancel)="isOpen = false"
@@ -31,6 +31,6 @@
     </ng-template>
     <ng-template #modalFooter>
         <button nz-button nzType="default" (click)="isOpen = false">Abbrechen</button>
-        <button nz-button nzType="primary" [nzLoading]="loading" (click)="onSubmit()">Verschieben</button>
+        <button nz-button nzType="primary" [nzLoading]="loading" (click)="onSubmit()">{{ submitLabel }}</button>
     </ng-template>
 </nz-modal>

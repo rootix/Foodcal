@@ -1,5 +1,5 @@
 @if (meal) {
-    <nz-card [class.empty]="isNew" [nzActions]="isNew ? [add] : [edit, move, delete]">
+    <nz-card [class.empty]="isNew" [nzActions]="isNew ? [add] : [edit, copy, move, delete]">
         <div class="card-block">
             <span class="card-tag">{{ meal.type === MealType.Lunch ? 'Mittag' : 'Abend' }}</span>
             <h3 class="card-title">
@@ -53,6 +53,9 @@
                 title="Menü bearbeiten"
                 (click)="editMeal.emit(meal)"
             ></i>
+        </ng-template>
+        <ng-template #copy>
+            <i nz-icon nzType="copy" title="Menü kopieren" (click)="copyMeal.emit(meal)"></i>
         </ng-template>
         <ng-template #move>
             <i nz-icon nzType="swap" title="Menü verschieben" (click)="moveMeal.emit(meal)"></i>

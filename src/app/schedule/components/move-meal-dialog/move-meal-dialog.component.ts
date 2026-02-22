@@ -33,6 +33,8 @@ import { NzWaveDirective } from 'ng-zorro-antd/core/wave';
 export class MoveMealDialogComponent {
     isOpen = false;
     loading = false;
+    title = '';
+    submitLabel = '';
     MealType = MealType;
 
     readonly form = new FormGroup({
@@ -42,10 +44,18 @@ export class MoveMealDialogComponent {
 
     private submitHandler: (v: { targetDate: Date; targetType: MealType }) => Observable<void> = () => EMPTY;
 
-    open(initialDate: Date, initialType: MealType, submitHandler: typeof this.submitHandler): void {
+    open(
+        initialDate: Date,
+        initialType: MealType,
+        submitHandler: typeof this.submitHandler,
+        title = 'Menü verschieben',
+        submitLabel = 'Verschieben'
+    ): void {
         this.form.reset();
         this.form.patchValue({ targetDate: initialDate, targetType: initialType });
         this.submitHandler = submitHandler;
+        this.title = title;
+        this.submitLabel = submitLabel;
         this.isOpen = true;
     }
 

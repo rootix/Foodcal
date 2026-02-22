@@ -5,6 +5,7 @@ import { eachDayOfInterval } from 'date-fns';
 import { mergeMap, switchMap, tap } from 'rxjs/operators';
 import { ScheduleApiService } from '../services/schedule-api.service';
 import {
+    CopyMeal,
     CreateMeal,
     DeleteMeal,
     EnsureInitializeSchedule,
@@ -107,6 +108,16 @@ export class ScheduleState implements NgxsOnInit {
             .pipe(
                 tap((deletedId) => ctx.setState(patch({ mealsOfWeek: removeItem<Meal>((m) => m?.id === deletedId) })))
             );
+    }
+
+    @Action(CopyMeal)
+    private copyMeal(ctx: StateContext<ScheduleStateModel>, { meal }: CopyMeal) {
+        return this.scheduleApiService.copyMeal(meal).pipe(
+            switchMap(() => {
+                const { week } = ctx.getState();
+                return ctx.dispatch(new LoadMealsOfWeek(week.startDate, week.endDate));
+            })
+        );
     }
 
     @Action(MoveMeal)

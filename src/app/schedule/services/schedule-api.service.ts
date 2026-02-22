@@ -217,6 +217,38 @@ export class ScheduleApiService {
         );
     }
 
+    copyMeal(meal: MealFormValue): Observable<void> {
+        const targetDateStr = toApiStringFromDate(meal.date);
+        return defer(() =>
+            from(
+                this.supabaseService
+                    .getClient()
+                    .from('meal')
+                    .select('id')
+                    .eq('date', targetDateStr)
+                    .eq('type', meal.type)
+                    .maybeSingle()
+            ).pipe(
+                map((r) => {
+                    if (r.error) throw r.error;
+                    return r.data;
+                }),
+                switchMap((occupant) => {
+                    if (occupant) {
+                        return from(this.supabaseService.getClient().from('meal').delete().eq('id', occupant.id)).pipe(
+                            map((r) => {
+                                if (r.error) throw r.error;
+                            })
+                        );
+                    }
+                    return of(undefined);
+                }),
+                switchMap(() => this.createMeal(meal)),
+                map(() => undefined)
+            )
+        );
+    }
+
     deleteMeal(id: number) {
         return defer(() =>
             from(this.supabaseService.getClient().from('meal').delete().eq('id', id)).pipe(map((_) => id))

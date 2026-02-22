@@ -40,6 +40,11 @@ export class MoveMeal {
     ) {}
 }
 
+export class CopyMeal {
+    static readonly type = '[Schedule] Copy Meal';
+    constructor(public meal: MealFormValue) {}
+}
+
 export class EnsureInitializeSchedule {
     static readonly type = '[Schedule] Ensure Initialize Schedule';
 }

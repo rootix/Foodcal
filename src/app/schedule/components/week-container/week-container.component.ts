@@ -1,11 +1,12 @@
 import { Component, HostBinding, Input, ViewChild, inject } from '@angular/core';
+import { addDays } from 'date-fns';
 import { Store } from '@ngxs/store';
 import { NzModalService } from 'ng-zorro-antd/modal';
-import { CreateMeal, DeleteMeal, MoveMeal, UpdateMeal } from '../../state/schedule.actions';
+import { CopyMeal, CreateMeal, DeleteMeal, MoveMeal, UpdateMeal } from '../../state/schedule.actions';
 import { MealDialogComponent } from '../meal-dialog/meal-dialog.component';
 import { MoveMealDialogComponent } from '../move-meal-dialog/move-meal-dialog.component';
 import { MealsPerDay } from '../../models/schedule.model';
-import { Meal, MealFormValue } from '../../../model';
+import { Meal, MealFormValue, MealType } from '../../../model';
 
 import { NzSpinComponent } from 'ng-zorro-antd/spin';
 import { DayContainerComponent } from '../day-container/day-container.component';
@@ -40,6 +41,25 @@ export class WeekContainerComponent {
         }
 
         this.dialog.open(meal, (m) => this.store.dispatch(new UpdateMeal(m as MealFormValue & { id: number })));
+    }
+
+    onCopyMeal(meal: Meal) {
+        this.moveDialog!.open(
+            addDays(meal.date, 1),
+            MealType.Lunch,
+            ({ targetDate, targetType }) =>
+                this.store.dispatch(
+                    new CopyMeal({
+                        id: null,
+                        date: targetDate,
+                        type: targetType,
+                        dishes: meal.dishes,
+                        notes: meal.notes,
+                    })
+                ),
+            'Menü kopieren',
+            'Kopieren'
+        );
     }
 
     onMoveMeal(meal: Meal) {
