@@ -82,8 +82,8 @@ export class ScheduleViewComponent implements OnInit {
                 if (year && week) {
                     this.store.dispatch(new NavigateToWeek(year, week));
                 } else {
-                    const currentWeek = getCurrentWeek();
-                    this.router.navigate(['/schedule', currentWeek.year, currentWeek.calendarWeek], {
+                    const stateWeek = this.store.selectSnapshot(ScheduleState.week);
+                    this.router.navigate(['/schedule', stateWeek.year, stateWeek.calendarWeek], {
                         replaceUrl: true,
                     });
                 }
