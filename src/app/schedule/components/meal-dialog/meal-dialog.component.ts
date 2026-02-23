@@ -1,4 +1,5 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Store } from '@ngxs/store';
 import { EMPTY, Observable, firstValueFrom } from 'rxjs';
@@ -41,6 +42,7 @@ import { NzIconDirective } from 'ng-zorro-antd/icon';
 })
 export class MealDialogComponent implements OnInit, OnDestroy {
     private store = inject(Store);
+    private destroyRef = inject(DestroyRef);
 
     allDishes$: Observable<Dish[]> = this.store
         .select(DishState.getAllDishes)
@@ -68,12 +70,8 @@ export class MealDialogComponent implements OnInit, OnDestroy {
 
     private readonly captureEnter = (event: KeyboardEvent): void => {
         if (event.key !== 'Enter' || !this.isSelectOpen || !this.searchText.trim()) return;
-        const allDishes = this.store.selectSnapshot(DishState.getAllDishes);
-        const selectedNames = this.form.controls.dishes.value ?? [];
-        const hasMatch = allDishes.some(
-            (d) => !selectedNames.includes(d.name) && d.name.toLowerCase().includes(this.searchText.toLowerCase())
-        );
-        if (hasMatch) return;
+        if (this.hasExactDishMatch(this.searchText.trim())) return;
+        if (document.querySelector('.ant-select-dropdown .ant-select-item-option-active')) return;
         event.preventDefault();
         event.stopPropagation();
         void this.createAndAddDish(this.searchText.trim());
@@ -82,6 +80,17 @@ export class MealDialogComponent implements OnInit, OnDestroy {
     ngOnInit() {
         document.addEventListener('keydown', this.captureEnter, true);
         this.store.dispatch(new EnsureLoadAllDishes());
+        this.form.controls.dishes.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((values) => {
+            const createValue = values?.find((v) => v.startsWith('__create__:'));
+            if (createValue) {
+                const name = createValue.slice('__create__:'.length);
+                this.form.controls.dishes.setValue(
+                    values.filter((v) => !v.startsWith('__create__:')),
+                    { emitEvent: false }
+                );
+                void this.createAndAddDish(name);
+            }
+        });
     }
 
     ngOnDestroy() {
@@ -118,9 +127,14 @@ export class MealDialogComponent implements OnInit, OnDestroy {
         this.form.controls.dishes.setValue(dishes);
     }
 
-    addNewDish(event: MouseEvent): void {
-        event.preventDefault(); // prevent blur before mousedown completes
-        void this.createAndAddDish(this.searchText.trim());
+    hasExactDishMatch(name: string): boolean {
+        if (!name) return false;
+        const allDishes = this.store.selectSnapshot(DishState.getAllDishes);
+        return allDishes.some((d) => d.name.toLowerCase() === name.toLowerCase());
+    }
+
+    get showCreateOption(): boolean {
+        return !!this.searchText && !this.hasExactDishMatch(this.searchText);
     }
 
     private async createAndAddDish(name: string): Promise<void> {

@@ -15,6 +15,7 @@
                 <nz-form-label [nzSpan]="6" nzFor="dishes"> Speisen </nz-form-label>
                 <nz-form-control [nzSpan]="18">
                     <nz-select
+                        style="width: 100%"
                         nzMode="multiple"
                         nzShowSearch
                         formControlName="dishes"
@@ -31,18 +32,18 @@
                                 [nzHide]="isSelected(item.name)"
                             ></nz-option>
                         }
+                        <nz-option
+                            nzCustomContent
+                            [nzLabel]="'+ \'' + searchText + '\' erstellen'"
+                            [nzValue]="'__create__:' + searchText"
+                            [nzHide]="!showCreateOption"
+                        >
+                            <span style="color: rgba(0, 0, 0, 0.45)">+ '{{ searchText }}' erstellen</span>
+                        </nz-option>
                     </nz-select>
                     <ng-template #notFoundTemplate>
                         @if (allDishesLoading$ | async) {
                             <nz-spin></nz-spin>
-                        } @else {
-                            <div style="padding: 5px 12px; cursor: pointer" (mousedown)="addNewDish($event)">
-                                @if (isCreatingDish) {
-                                    <nz-spin nzSize="small"></nz-spin>
-                                } @else {
-                                    + "{{ searchText }}" erstellen
-                                }
-                            </div>
                         }
                     </ng-template>
                     @if (selectedDishes.length > 1) {
